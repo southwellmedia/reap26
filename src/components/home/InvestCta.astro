@@ -1,0 +1,31 @@
+---
+/**
+ * InvestCta
+ * "Invest With Us" — closing call-to-action over the towers-at-dusk photo.
+ * The request-access form lives on its own landing page (/invest).
+ */
+import towers from '@/assets/reap/towers-dusk.jpg';
+import watermark from '@/assets/reap/reap-watermark.svg';
+import { firmStats, PERFORMANCE_DISCLOSURE } from '@/config/stats.config';
+---
+
+<section class="cta" id="invest" style={`--cta-photo: url('${towers.src}')`}>
+  <div class="bgimg"></div>
+  <div class="bgscrim"></div>
+  <img class="watermark" src={watermark.src} alt="" />
+  <div class="cta-in">
+    <div class="eyebrow on-dark">Invest With Us</div>
+    <h2 class="display">
+      Invest alongside a <em>{firmStats.avgIrr} average realized IRR</em> track record.
+    </h2>
+    <p>
+      We allow sophisticated investors — accredited or not — to participate in our offerings. Tell
+      us about your goals and we'll walk you through what's open now.
+    </p>
+    <div class="cta-actions">
+      <a class="btn gold" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
+      <a class="btn ghost" href="#perspectives">Read Our Perspectives</a>
+    </div>
+    <p class="disclosure">{PERFORMANCE_DISCLOSURE}</p>
+  </div>
+</section>

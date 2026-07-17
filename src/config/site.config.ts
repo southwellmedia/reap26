@@ -49,24 +49,21 @@ export interface SiteConfig {
 }
 
 const siteConfig: SiteConfig = {
-  name: 'Velocity',
-  description: 'A modern website built with Astro and Tailwind CSS',
-  url: SITE_URL || 'https://example.com',
+  name: 'Reap Capital',
+  description:
+    'An IRR-driven, vertically integrated, value-add real estate operator based in Dallas–Fort Worth. Recognize opportunity. Reap Capital.',
+  url: SITE_URL || 'https://reapcapital.com',
   ogImage: '/og-default.png',
-  author: 'Southwell Media',
-  // Demo contact info - replace with your actual business details
-  email: 'hello@example.com',
-  phone: '+1 (555) 123-4567',
+  author: 'Reap Capital',
+  email: 'invest@reapcapital.com',
   address: {
-    street: '123 Main St',
+    street: '',
     city: 'Dallas',
     state: 'TX',
-    zip: '75001',
+    zip: '75201',
     country: 'US',
   },
-  socialLinks: [
-    'https://github.com/southwellmedia',
-  ],
+  socialLinks: [],
   // Twitter metadata - update with your actual handles or remove
   // twitter: {
   //   site: '@yourhandle',
@@ -80,13 +77,13 @@ const siteConfig: SiteConfig = {
   // Replace the SVG files there with your own branding
   branding: {
     logo: {
-      alt: 'Velocity',
+      alt: 'Reap Capital',
     },
     favicon: {
       svg: '/favicon.svg',
     },
     colors: {
-      themeColor: '#F94C10',
+      themeColor: '#394334',
       backgroundColor: '#ffffff',
     },
   },

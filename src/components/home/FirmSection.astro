@@ -1,0 +1,37 @@
+---
+/**
+ * FirmSection
+ * "The Firm" — vertically integrated intro with editorial image composition.
+ */
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import skyline from '@/assets/reap/dallas-skyline.jpg';
+import apartment from '@/assets/reap/apartment-blue.jpg';
+import { firmStats } from '@/config/stats.config';
+---
+
+<section class="block" id="firm">
+  <div class="wrap">
+    <SectionHead label="The Firm" />
+    <div class="split" style="margin-top:48px">
+      <h2 class="display display-2">Vertically integrated. <em>Relentlessly</em> disciplined.</h2>
+      <div class="lede">
+        <p style="margin:0 0 20px">
+          Most operators hand their business plan to someone else the day after closing. We never
+          do. Acquisitions, construction, and property management run through
+          <strong>one team</strong> — the same team that underwrote the deal.
+        </p>
+        <p style="margin:0">
+          Founded in Dallas–Fort Worth in {firmStats.founded}, Reap Capital has sponsored the
+          purchase of {firmStats.unitsSponsored} multifamily units valued at {firmStats.aumCopy} —
+          and returned an average {firmStats.avgIrr} realized IRR to investors since inception.
+        </p>
+      </div>
+    </div>
+    <div class="firm-visual">
+      <Image class="main" src={skyline} alt="Downtown Dallas skyline" widths={[720, 1080, 1600]} sizes="(max-width: 760px) 100vw, 78vw" />
+      <Image class="inset" src={apartment} alt="Multifamily asset detail" widths={[480, 720]} sizes="(max-width: 760px) 55vw, 34vw" />
+      <div class="caption">Dallas–Fort Worth — Home Field · Est. 2017</div>
+    </div>
+  </div>
+</section>

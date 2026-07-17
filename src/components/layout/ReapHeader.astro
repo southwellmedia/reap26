@@ -1,0 +1,33 @@
+---
+/**
+ * ReapHeader
+ * Fixed site nav: transparent over the hero, solid olive after scroll
+ * (the `.solid` class is toggled by the script in HomeLayout, which also
+ * drives the mobile disclosure menu).
+ */
+import { getNavItems } from '@/config/nav.config';
+import logomark from '@/assets/reap/reap-logomark-gold.svg';
+
+const navItems = getNavItems();
+---
+
+<header class="reap-nav">
+  <div class="nav-in">
+    <a class="brand" href="/#top">
+      <img class="brand-mark" src={logomark.src} width="44" height="44" alt="" />
+      <span>
+        <span class="brand-name">Reap Capital</span>
+        <span class="brand-tag">Real Estate • Private Equity</span>
+      </span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+      <a href="/invest" class="btn">Invest With Us</a>
+    </nav>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="reap-menu">Menu</button>
+  </div>
+  <nav class="nav-menu" id="reap-menu" aria-label="Primary" hidden>
+    {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+    <a href="/invest" class="btn gold">Invest With Us</a>
+  </nav>
+</header>

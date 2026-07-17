@@ -1,0 +1,50 @@
+---
+/**
+ * IntegrationSection
+ * "One Team" — dark olive panel on vertical integration economics.
+ */
+import SectionHead from './SectionHead.astro';
+import watermark from '@/assets/reap/reap-watermark.svg';
+
+const pillars = [
+  {
+    title: 'Acquisitions',
+    body: 'Intimate market knowledge and lender relationships give us the inside track on off-market and distressed opportunities — discounted up to 35% from nearby comps.',
+  },
+  {
+    title: 'Construction',
+    body: 'In-house construction management executes a standardized renovation scope across hundreds of units at a time, on schedule and below third-party cost.',
+  },
+  {
+    title: 'Property Management',
+    body: 'Our own teams lease, operate and report on every asset. When something needs to change at a property, it changes that week.',
+  },
+];
+---
+
+<section class="block integrated">
+  <img class="watermark" src={watermark.src} alt="" />
+  <div class="wrap" style="position:relative">
+    <SectionHead label="One Team" onDark={true} />
+    <div class="split" style="margin-top:48px">
+      <h2 class="display display-2">
+        Every fee we absorb is value <em>our investors keep.</em>
+      </h2>
+      <p class="side-note on-dark">
+        Our property management company operates for the benefit of our investments. We reinvest
+        all fees and have never taken a distribution from that entity — enhancing the value of
+        every property we hold.
+      </p>
+    </div>
+    <div class="cols3">
+      {
+        pillars.map((pillar) => (
+          <div>
+            <div class="k">{pillar.title}</div>
+            <p>{pillar.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

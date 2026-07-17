@@ -1,0 +1,78 @@
+---
+/**
+ * TeamSection
+ * "The Team" — founder lead panel plus grayscale-to-color people grid.
+ */
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import watermark from '@/assets/reap/reap-watermark.svg';
+import davidLilley from '@/assets/reap/team/david-lilley.jpg';
+import kimberlyBarnes from '@/assets/reap/team/kimberly-barnes.jpg';
+import milesMinnis from '@/assets/reap/team/miles-minnis.jpg';
+import prestonMeyers from '@/assets/reap/team/preston-meyers.jpg';
+import cameronKinlaw from '@/assets/reap/team/cameron-kinlaw.jpg';
+import mikePrince from '@/assets/reap/team/mike-prince.jpg';
+import { firmStats } from '@/config/stats.config';
+
+const people = [
+  { photo: kimberlyBarnes, name: 'Kimberly Barnes', role: 'Chief Financial Officer' },
+  { photo: milesMinnis, name: 'Miles Minnis', role: 'Senior Vice President' },
+  { photo: prestonMeyers, name: 'Preston Meyers', role: 'Director, Investor Relations' },
+  { photo: cameronKinlaw, name: 'Cameron Kinlaw', role: 'Director, Acquisitions' },
+  { photo: mikePrince, name: 'Mike Prince', role: 'Vice President of Construction' },
+];
+---
+
+<section class="block team" id="team">
+  <div class="wrap">
+    <SectionHead label="The Team" />
+    <div class="split split-end" style="margin-top:48px">
+      <h2 class="display display-2">Operators first. <em>Investors always.</em></h2>
+      <p class="side-note">
+        Every member of this team has capital alongside yours. We underwrite, build and operate as
+        principals — because we are.
+      </p>
+    </div>
+    <div class="team-lead">
+      <div class="ph">
+        <Image src={davidLilley} alt="David Lilley, Founder and CEO" widths={[480, 720, 1080]} sizes="(max-width: 1100px) 100vw, 40vw" />
+      </div>
+      <div class="bd">
+        <img class="watermark" src={watermark.src} alt="" />
+        <span class="role">Founder &amp; CEO</span>
+        <h3>David Lilley</h3>
+        <p>
+          David began investing in 2013 and has since sponsored the purchase of
+          {firmStats.unitsSponsored} multifamily units valued at {firmStats.aumCopy} — with direct
+          experience in every facet of acquisitions, construction, and property management. Before
+          real estate, he served as a U.S. Marine Corps Infantryman, firefighter/paramedic, and
+          Department of State close-protection specialist with deployments to Afghanistan, Iraq and
+          the Philippines.
+        </p>
+        <p class="pull-quote">“We built the machine so our investors don't pay for someone else's.”</p>
+      </div>
+    </div>
+    <div class="team-grid">
+      {
+        people.map((person) => (
+          <div class="person">
+            <div class="ph">
+              <Image src={person.photo} alt={person.name} widths={[420, 640]} sizes="(max-width: 760px) 100vw, 33vw" />
+            </div>
+            <div class="bd">
+              <h4>{person.name}</h4>
+              <span class="role">{person.role}</span>
+            </div>
+          </div>
+        ))
+      }
+      <div class="person join-card">
+        <span class="eyebrow on-dark">Join the Team</span>
+        <span class="pitch">We hire operators who sweat the details.</span>
+        <a class="btn ghost" href="mailto:invest@reapcapital.com?subject=Open%20Roles" style="margin-top:8px"
+          >Ask About Roles <span aria-hidden="true">⟶</span></a
+        >
+      </div>
+    </div>
+  </div>
+</section>

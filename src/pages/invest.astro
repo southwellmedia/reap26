@@ -1,0 +1,197 @@
+---
+/**
+ * /invest — Request Access
+ * A standalone split-view experience, not a site page: full-height olive
+ * brand panel (photo, watermark, stats, LP quote) beside a focused light
+ * conversion column. No site nav or footer — the only exits are the brand
+ * link home and the email fallback. Form posts to /api/contact.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import '@/styles/reap-home.css';
+import towers from '@/assets/reap/towers-dusk.jpg';
+import watermark from '@/assets/reap/reap-watermark.svg';
+import logomark from '@/assets/reap/reap-logomark-gold.svg';
+import { firmStats, PERFORMANCE_DISCLOSURE } from '@/config/stats.config';
+
+const steps = [
+  {
+    num: '01',
+    title: 'Request access',
+    body: 'Tell us who you are and what you want your capital to do. We reply within two business days.',
+  },
+  {
+    num: '02',
+    title: 'Talk to the operators',
+    body: 'A direct conversation with the team that underwrites, builds, and manages every asset — no salespeople in between.',
+  },
+  {
+    num: '03',
+    title: 'Review what is open',
+    body: 'Current offerings with the underwriting, business plan, and terms laid out deal by deal.',
+  },
+];
+---
+
+<BaseLayout
+  title="Invest With Us"
+  description="Request access to Reap Capital's current offerings — a vertically integrated, value-add multifamily operator with a 34.25% average realized IRR since inception."
+>
+  <div class="reap-home invest-page" style={`--invest-photo: url('${towers.src}')`}>
+    <aside class="invest-brand-panel">
+      <div class="photo"></div>
+      <div class="scrim"></div>
+      <img class="watermark" src={watermark.src} alt="" />
+      <div class="invest-brand-in">
+        <a class="invest-brand-link" href="/">
+          <img src={logomark.src} width="40" height="40" alt="" />
+          <span>
+            <span class="name">Reap Capital</span>
+            <span class="back"><span aria-hidden="true">⟵</span> Back to the firm</span>
+          </span>
+        </a>
+
+        <div class="invest-brand-copy">
+          <span class="eyebrow on-dark">Invest With Us</span>
+          <h1 class="display">Put disciplined operators<br /><em>behind your capital.</em></h1>
+          <p>
+            We allow sophisticated investors — accredited or not — to participate in our offerings.
+            The same team that underwrites each deal renovates it, operates it, and reports to you.
+          </p>
+        </div>
+
+        <div class="invest-brand-foot">
+          <div class="invest-stats">
+            <div>
+              <div class="n">{firmStats.avgIrr}</div>
+              <div class="l">Avg. Realized IRR</div>
+            </div>
+            <div>
+              <div class="n">{firmStats.aum}</div>
+              <div class="l">Assets Under Mgmt.</div>
+            </div>
+            <div>
+              <div class="n">{firmStats.fullCycle}</div>
+              <div class="l">Full-Cycle Deals</div>
+            </div>
+          </div>
+          <blockquote class="invest-quote">
+            <p>
+              “I have never been more pleased, nor more impressed, with my investments with Reap
+              Capital. Reap Capital has earned a lifelong customer with myself and my family.”
+            </p>
+            <footer>Casey P. Cook · Reap Capital Investor</footer>
+          </blockquote>
+        </div>
+      </div>
+    </aside>
+
+    <section class="invest-form-panel">
+      <div class="invest-form-inner">
+        <div class="invest-form-head">
+          <span class="eyebrow">Request Access</span>
+          <h2 class="display display-2">Three steps from <em>here to allocated.</em></h2>
+        </div>
+
+        <ol class="next-steps">
+          {
+            steps.map((step) => (
+              <li>
+                <span class="num">{step.num}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+
+        <form class="invest-form on-light" method="post" action="/api/contact" novalidate>
+          <div class="field">
+            <label for="ra-name">Name</label>
+            <input id="ra-name" name="name" type="text" autocomplete="name" required minlength="2" />
+          </div>
+          <div class="field">
+            <label for="ra-email">Email</label>
+            <input id="ra-email" name="email" type="email" autocomplete="email" required />
+          </div>
+          <div class="field field-wide">
+            <label for="ra-status">Investor Status</label>
+            <select id="ra-status" name="investor-status">
+              <option value="Accredited investor">Accredited investor</option>
+              <option value="Non-accredited investor">Non-accredited investor</option>
+              <option value="Not sure yet">Not sure yet</option>
+            </select>
+          </div>
+          <div class="field field-wide">
+            <label for="ra-message">Your Goals</label>
+            <textarea
+              id="ra-message"
+              name="message"
+              rows="4"
+              required
+              minlength="10"
+              placeholder="Timeline, target allocation, questions — whatever helps us point you at the right offering."></textarea>
+          </div>
+          <input type="text" name="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
+          <input type="hidden" name="subject" value="Request Access — Invest Page" />
+          <div class="field field-wide form-actions">
+            <button class="btn gold" type="submit">Request Access <span aria-hidden="true">⟶</span></button>
+            <a class="alt-path" href="mailto:invest@reapcapital.com">or email invest@reapcapital.com</a>
+          </div>
+          <p class="form-status field-wide" role="status" aria-live="polite"></p>
+        </form>
+
+        <p class="invest-disclosure">{PERFORMANCE_DISCLOSURE}</p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  // Request-access form → POST /api/contact (email link remains as fallback)
+  function initInvestForm() {
+    const form = document.querySelector<HTMLFormElement>('.invest-form');
+    if (!form || form.dataset.wired) return;
+    form.dataset.wired = 'true';
+    const status = form.querySelector<HTMLElement>('.form-status');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const data = new FormData(form);
+      // Fold investor status into the message body (the API schema has no custom fields)
+      const investorStatus = data.get('investor-status');
+      if (investorStatus) {
+        data.set('message', `Investor status: ${investorStatus}\n\n${data.get('message') ?? ''}`);
+        data.delete('investor-status');
+      }
+      if (button) button.disabled = true;
+      if (status) {
+        status.classList.remove('error');
+        status.textContent = 'Sending…';
+      }
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: data });
+        const json = await res.json().catch(() => ({ success: false }));
+        if (res.ok && json.success) {
+          form.reset();
+          if (status)
+            status.textContent = 'Received. We reply within two business days with what’s open now.';
+        } else {
+          throw new Error('submit-failed');
+        }
+      } catch {
+        if (status) {
+          status.classList.add('error');
+          status.textContent =
+            'Something went wrong on our end — please email invest@reapcapital.com and we’ll take it from there.';
+        }
+      } finally {
+        if (button) button.disabled = false;
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initInvestForm);
+</script>

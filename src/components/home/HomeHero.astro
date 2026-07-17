@@ -1,0 +1,64 @@
+---
+/**
+ * HomeHero
+ * Full-bleed hero: drifting aerial photo, olive scrim, watermark, staggered
+ * load-in, and the count-up stat ticker.
+ */
+import heroBg from '@/assets/reap/hero-aerial-olive.webp';
+import watermark from '@/assets/reap/reap-watermark.svg';
+import { firmStats } from '@/config/stats.config';
+---
+
+<section class="hero" id="top">
+  <video
+    class="hero-bg"
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster={heroBg.src}
+    aria-hidden="true"
+  >
+    <source src="/videos/hero.mp4" type="video/mp4" />
+  </video>
+  <div class="hero-scrim"></div>
+  <img class="hero-mark" src={watermark.src} alt="" />
+  <div class="wrap hero-in">
+    <div class="kicker hload">
+      <span class="eyebrow on-dark">Real Estate • Private Equity • Investing</span>
+    </div>
+    <h1 class="display hload h2">
+      Creating generational wealth through<br /><em class="gold">passive investments</em>
+    </h1>
+    <div class="hero-row hload h3">
+      <p>
+        Reap Capital is an IRR-driven, vertically integrated, value-add operator. We purchase
+        underperforming assets and increase their revenue by renovating, upgrading, repositioning,
+        or improving the functionality of the asset.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn gold" href="/invest">Invest With Us <span aria-hidden="true">⟶</span></a>
+        <a class="btn ghost" href="#portfolio">View Track Record</a>
+      </div>
+    </div>
+  </div>
+  <div class="ticker hload h4">
+    <div>
+      <div class="n">{firmStats.avgIrr}</div>
+      <div class="l">Average Realized IRR Since Inception</div>
+    </div>
+    <div>
+      <div class="n">{firmStats.aum}</div>
+      <div class="l">Assets Under Management</div>
+    </div>
+    <div>
+      <div class="n">{firmStats.transactions}</div>
+      <div class="l">Transactions Since {firmStats.transactionsSinceYear}</div>
+    </div>
+    <div>
+      <div class="n">{firmStats.fullCycle}</div>
+      <div class="l">Full-Cycle Investments</div>
+    </div>
+  </div>
+</section>

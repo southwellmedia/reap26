@@ -10,9 +10,16 @@
 @import './tokens/spacing.css';
 
 /* Self-hosted fonts via Fontsource (CSP-safe, no external requests) */
-@import '@fontsource-variable/manrope';
-@import '@fontsource-variable/outfit';
 @import '@fontsource-variable/jetbrains-mono';
+
+/* Reap Capital brand faces (headings are always weight 400 — see theme).
+   Re-add @fontsource-variable/manrope + outfit if switching back to the
+   default or midnight themes. */
+@import '@fontsource/playfair-display-sc';
+@import '@fontsource-variable/playfair-display';
+@import '@fontsource-variable/playfair-display/wght-italic.css';
+@import '@fontsource-variable/montserrat';
+@import '@fontsource-variable/montserrat/wght-italic.css';
 
 /* Dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));

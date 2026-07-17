@@ -1,0 +1,120 @@
+---
+/**
+ * TestimonialSection
+ * "From Our Partners" — asymmetric split: captioned candid of the founder
+ * beside a quote slider (testimonials verbatim from reapcapital.com, with
+ * real attributions) and a verifiable proof row. Manual prev/next only —
+ * no auto-advance, per the brand's restrained-motion canon.
+ */
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import davidCandid from '@/assets/reap/david-candid.jpg';
+import { firmStats } from '@/config/stats.config';
+
+const testimonials = [
+  {
+    text: 'I have never been more pleased, nor more impressed, with my investments with Reap Capital. From day one, David was very transparent about our investment strategy and continuously updated me regarding my investment. David did a good job of setting reasonable expectations for our investment and far exceeded both the expected return and other returns from investment opportunities I had available. Reap Capital has earned a lifelong customer with myself and my family.',
+    name: 'Casey P. Cook',
+    role: 'Reap Capital Investor',
+  },
+  {
+    text: 'Very impressed and very excited for the future. I love the transparency of the deals we are in as well as upcoming potential deals. Would highly recommend. David and his team have an established knowledge of the DFW market and we cannot wait for the next opportunity.',
+    name: 'Clint Stubbs',
+    role: 'Reap Capital Investor',
+  },
+  {
+    text: 'Reap Capital is the real deal! David provided a level of transparency from the beginning that brought a level of comfort I needed. Looking forward to significant growth with this team.',
+    name: 'Nick U.',
+    role: 'Reap Capital Investor',
+  },
+  {
+    text: "Seriously, if you're looking for a place to invest, this is the place for you. The team at Reap Capital constantly stays up to date on communication with investors and the financial industry. I wasn't worried about my investment with this group.",
+    name: 'John Peck',
+    role: 'Reap Capital Investor',
+  },
+];
+
+const pad = (n: number) => String(n + 1).padStart(2, '0');
+---
+
+<section class="block tinted">
+  <div class="wrap">
+    <SectionHead label="From Our Partners" />
+    <div class="testimonial-split">
+      <figure class="testimonial-photo">
+        <Image
+          src={davidCandid}
+          alt="David Lilley in conversation with a colleague at the Reap Capital offices"
+          widths={[480, 720, 1080]}
+          sizes="(max-width: 1100px) 100vw, 36vw"
+        />
+        <figcaption>David Lilley · Founder &amp; CEO</figcaption>
+      </figure>
+      <div class="testimonial-quote tq-slider">
+        <div class="tq-track">
+          {
+            testimonials.map((t, i) => (
+              <figure class:list={['tq-slide', { active: i === 0 }]} aria-hidden={i === 0 ? 'false' : 'true'}>
+                <blockquote>
+                  <p>{t.text}</p>
+                </blockquote>
+                <figcaption>{t.name} · {t.role}</figcaption>
+              </figure>
+            ))
+          }
+        </div>
+        <div class="tq-foot">
+          <div class="proof">
+            <div>
+              <span class="n">{firmStats.fullCycle}</span>
+              <span class="l">Full-Cycle Exits</span>
+            </div>
+            <div>
+              <span class="n">{firmStats.avgIrr}</span>
+              <span class="l">Avg. Realized IRR</span>
+            </div>
+            <div>
+              <span class="n">{firmStats.unitsSponsored}</span>
+              <span class="l">Units Sponsored</span>
+            </div>
+          </div>
+          <div class="tq-controls">
+            <button type="button" class="tq-btn" data-prev aria-label="Previous testimonial">
+              <span aria-hidden="true">⟵</span>
+            </button>
+            <span class="tq-count" aria-live="polite"><span data-current>{pad(0)}</span> / {pad(testimonials.length - 1)}</span>
+            <button type="button" class="tq-btn" data-next aria-label="Next testimonial">
+              <span aria-hidden="true">⟶</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initTestimonialSlider() {
+    const slider = document.querySelector<HTMLElement>('.tq-slider');
+    if (!slider || slider.dataset.wired) return;
+    slider.dataset.wired = 'true';
+
+    const slides = Array.from(slider.querySelectorAll<HTMLElement>('.tq-slide'));
+    const counter = slider.querySelector<HTMLElement>('[data-current]');
+    let index = 0;
+
+    const show = (next: number) => {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+        slide.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+      });
+      if (counter) counter.textContent = String(index + 1).padStart(2, '0');
+    };
+
+    slider.querySelector('[data-prev]')?.addEventListener('click', () => show(index - 1));
+    slider.querySelector('[data-next]')?.addEventListener('click', () => show(index + 1));
+  }
+
+  document.addEventListener('astro:page-load', initTestimonialSlider);
+</script>

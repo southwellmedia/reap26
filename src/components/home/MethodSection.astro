@@ -1,0 +1,50 @@
+---
+/**
+ * MethodSection
+ * "The Method" — numbered four-step rule list.
+ */
+import SectionHead from './SectionHead.astro';
+
+const steps = [
+  {
+    num: '01',
+    title: 'Evaluate',
+    body: 'A top-down, macro market evaluation locates cities with high growth in population, employment and wages — starting with our home field, Dallas–Fort Worth.',
+  },
+  {
+    num: '02',
+    title: 'Identify',
+    body: 'We leverage our vast network of expertise to identify underperforming, mismanaged and distressed assets with additional value-add potential.',
+  },
+  {
+    num: '03',
+    title: 'Renovate',
+    body: 'A pre-determined, standardized approach to renovations creates more efficiency and reduces cost — the same scope, executed at scale.',
+  },
+  {
+    num: '04',
+    title: 'Operate',
+    body: 'We observe and operate with exquisite attention to detail. This ensures optimal performance across every asset, every month of the hold.',
+  },
+];
+---
+
+<section class="block method-block" id="method">
+  <div class="wrap">
+    <SectionHead label="The Method" />
+    <h2 class="display display-2" style="margin-top:48px;max-width:20ch">
+      A repeatable process, from market to <em>unit turn.</em>
+    </h2>
+    <div class="rule-list">
+      {
+        steps.map((step) => (
+          <div class="step">
+            <div class="num">{step.num}</div>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

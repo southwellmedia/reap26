@@ -1,0 +1,190 @@
+/* =============================================================================
+   Velocity Theme - Reap Capital
+   =============================================================================
+   Brand theme for Reap Capital: olive greens, muted gold, Playfair Display SC
+   headings over Montserrat body. Square-edged, editorial, flat.
+
+   Implements the full Velocity theme contract (see themes/default.css for the
+   token list). Raw brand values come from the Reap design system
+   (design-system/tokens/) and are exposed here as --green- and --gold-
+   custom properties so any component can reach the brand palette directly.
+   ============================================================================= */
+
+:root {
+  /* -------------------------------------------------------------------------
+     Reap brand palette (raw values from the Figma brand board)
+     ------------------------------------------------------------------------- */
+  --green-900: #394334; /* primary brand olive */
+  --green-700: #4f5b49; /* secondary olive */
+  --green-950: #252c21; /* deep ink for footers/pressed states */
+  --gold-400: #ceb47f;  /* brand gold (palette swatch) */
+  --gold-500: #ccaf79;  /* logomark gold */
+  --gold-600: #b69b66;  /* hover/pressed gold */
+
+  /* Brand scale mapped onto the gold ramp */
+  --brand-50: #faf8f2;
+  --brand-100: #f3edde;
+  --brand-200: #e7dbbe;
+  --brand-300: #dbc89e;
+  --brand-400: #ceb47f;
+  --brand-500: #ccaf79;
+  --brand-600: #b69b66;
+  --brand-700: #97804f;
+  --brand-800: #6f5e3a;
+  --brand-900: #4a3f27;
+
+  /* -------------------------------------------------------------------------
+     Semantic Tokens - Light Mode
+     ------------------------------------------------------------------------- */
+  --background: var(--gray-0);
+  --background-secondary: var(--gray-50);
+  --background-tertiary: var(--gray-100);
+  --background-elevated: var(--gray-0);
+
+  --foreground: var(--gray-950);
+  --foreground-secondary: var(--gray-700);
+  --foreground-muted: var(--gray-600);
+  --foreground-subtle: var(--gray-500);
+
+  --border: var(--gray-200);
+  --border-strong: var(--gray-300);
+  --border-subtle: var(--gray-100);
+
+  --primary: var(--green-900);
+  --primary-hover: var(--green-700);
+  --primary-foreground: var(--gray-0);
+
+  --secondary: var(--gray-100);
+  --secondary-hover: var(--gray-200);
+  --secondary-foreground: var(--green-900);
+
+  --accent: var(--gold-500);
+  --accent-hover: var(--gold-600);
+  --accent-light: var(--brand-100);
+
+  --muted: var(--gray-100);
+  --muted-foreground: var(--gray-500);
+
+  --card: var(--gray-0);
+  --card-border: var(--gray-200);
+
+  --input-bg: var(--gray-0);
+  --input-border: var(--gray-300);
+  --input-focus: var(--green-900);
+
+  --ring: var(--gold-600);
+
+  --destructive: var(--error);
+  --destructive-foreground: var(--gray-0);
+
+  --gradient-start: oklch(96.5% 0.005 110);
+  --gradient-end: oklch(100% 0 0);
+
+  /* -------------------------------------------------------------------------
+     Inverted/Contrast Section - the olive panel look
+     ------------------------------------------------------------------------- */
+  --surface-invert: var(--green-950);
+  --surface-invert-secondary: var(--green-900);
+  --surface-invert-tertiary: var(--green-700);
+  --on-invert: #ffffff;
+  --on-invert-secondary: rgba(255, 255, 255, 0.85);
+  --on-invert-muted: rgba(255, 255, 255, 0.72);
+  --border-invert: rgba(255, 255, 255, 0.18);
+  --border-invert-strong: rgba(255, 255, 255, 0.32);
+
+  /* -------------------------------------------------------------------------
+     Typography
+     ------------------------------------------------------------------------- */
+  --theme-font-sans: 'Montserrat Variable', 'Montserrat', 'Helvetica Neue',
+    Arial, ui-sans-serif, system-ui, sans-serif;
+  --theme-font-display: 'Playfair Display SC', 'Playfair Display', Georgia,
+    'Times New Roman', serif;
+  --theme-font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace,
+    SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  --theme-heading-weight: 400;
+  --theme-heading-tracking: 0;
+  --theme-body-leading: 1.6;
+
+  /* -------------------------------------------------------------------------
+     Shadows - the brand is flat; use sparingly
+     ------------------------------------------------------------------------- */
+  --theme-shadow-sm: 0 1px 2px rgba(37, 44, 33, 0.08);
+  --theme-shadow-md: 0 1px 2px rgba(37, 44, 33, 0.08), 0 8px 24px rgba(37, 44, 33, 0.1);
+  --theme-shadow-lg: 0 12px 40px rgba(37, 44, 33, 0.18);
+  --theme-shadow-xl: 0 24px 56px rgba(37, 44, 33, 0.24);
+
+  /* -------------------------------------------------------------------------
+     Border Radii - square-edged brand; controls get a whisper of rounding
+     ------------------------------------------------------------------------- */
+  --theme-radius-sm: 2px;
+  --theme-radius-md: 2px;
+  --theme-radius-lg: 4px;
+  --theme-radius-xl: 6px;
+  --theme-radius-full: 9999px;
+}
+
+/* -------------------------------------------------------------------------
+   Dark Mode - deep olive ink
+   ------------------------------------------------------------------------- */
+.dark {
+  --background: var(--green-950);
+  --background-secondary: #2c3427;
+  --background-tertiary: var(--green-900);
+  --background-elevated: #2c3427;
+
+  --foreground: #f5f4ef;
+  --foreground-secondary: rgba(255, 255, 255, 0.85);
+  --foreground-muted: rgba(255, 255, 255, 0.72);
+  --foreground-subtle: rgba(255, 255, 255, 0.55);
+
+  --border: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.28);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --primary: var(--gold-400);
+  --primary-hover: var(--gold-600);
+  --primary-foreground: var(--green-950);
+
+  --secondary: var(--green-900);
+  --secondary-hover: var(--green-700);
+  --secondary-foreground: #f5f4ef;
+
+  --muted: var(--green-900);
+  --muted-foreground: rgba(255, 255, 255, 0.65);
+
+  --card: #2c3427;
+  --card-border: rgba(255, 255, 255, 0.14);
+
+  --input-bg: #2c3427;
+  --input-border: rgba(255, 255, 255, 0.24);
+  --input-focus: var(--gold-400);
+
+  --ring: var(--gold-400);
+
+  --accent-light: var(--brand-900);
+
+  --destructive: oklch(65% 0.22 25);
+  --destructive-foreground: var(--gray-0);
+
+  --gradient-start: oklch(23% 0.02 130);
+  --gradient-end: oklch(27% 0.02 130);
+
+  --success-light: oklch(25% 0.05 145);
+  --warning-light: oklch(25% 0.05 85);
+  --error-light: oklch(25% 0.05 25);
+
+  --surface-invert: var(--green-900);
+  --surface-invert-secondary: var(--green-700);
+  --surface-invert-tertiary: #5c6955;
+  --on-invert: #ffffff;
+  --on-invert-secondary: rgba(255, 255, 255, 0.85);
+  --on-invert-muted: rgba(255, 255, 255, 0.72);
+  --border-invert: rgba(255, 255, 255, 0.18);
+  --border-invert-strong: rgba(255, 255, 255, 0.32);
+
+  --theme-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --theme-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.25), 0 0 1px rgba(0, 0, 0, 0.1);
+  --theme-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.1);
+  --theme-shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.1);
+}

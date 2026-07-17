@@ -1,0 +1,81 @@
+---
+/**
+ * HomeLayout
+ * Layout for the Reap Capital marketing homepage: bespoke fixed nav and
+ * footer (ReapHeader/ReapFooter) instead of the standard Velocity chrome,
+ * plus the scroll-reveal / count-up interactions ported from the design kit.
+ */
+import BaseLayout from './BaseLayout.astro';
+import ReapHeader from '@/components/layout/ReapHeader.astro';
+import ReapFooter from '@/components/layout/ReapFooter.astro';
+import '@/styles/reap-home.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+const { title, description, image, imageAlt } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} image={image} imageAlt={imageAlt} includeOrgSchema={true}>
+  <ReapHeader slot="header" />
+
+  <div class="reap-home">
+    <slot />
+  </div>
+
+  <ReapFooter slot="footer" />
+</BaseLayout>
+
+<script>
+  // Homepage interactions. Re-runs on astro:page-load (view transitions); the
+  // AbortController tears down the previous page's listeners first.
+  let controller: AbortController | undefined;
+
+  function initReapHome() {
+    controller?.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+
+    // Hero video: honor reduced-motion (poster stays as the still fallback)
+    const heroVideo = document.querySelector<HTMLVideoElement>('.hero video, video.hero-bg');
+    if (heroVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
+    }
+
+    // Nav: transparent over hero → solid after scroll
+    const nav = document.querySelector('.reap-nav');
+    if (nav) {
+      const onScroll = () => nav.classList.toggle('solid', window.scrollY > 60);
+      window.addEventListener('scroll', onScroll, { passive: true, signal });
+      onScroll();
+    }
+
+    // Mobile disclosure menu
+    const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+    const menu = document.querySelector<HTMLElement>('.nav-menu');
+    if (toggle && menu && nav) {
+      const setOpen = (open: boolean) => {
+        menu.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Close' : 'Menu';
+        nav.classList.toggle('menu-open', open);
+      };
+      toggle.addEventListener('click', () => setOpen(menu.hidden), { signal });
+      menu.addEventListener(
+        'click',
+        (e) => {
+          if ((e.target as HTMLElement).closest('a')) setOpen(false);
+        },
+        { signal }
+      );
+    }
+
+  }
+
+  document.addEventListener('astro:page-load', initReapHome);
+</script>

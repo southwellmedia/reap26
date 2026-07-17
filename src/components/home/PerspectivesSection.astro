@@ -1,0 +1,54 @@
+---
+/**
+ * PerspectivesSection
+ * "Perspectives" — editorial index. Pulls real posts from the blog collection;
+ * until posts exist, shows an honest launch note instead of fabricated
+ * article rows (no dead links, no fake read-times).
+ */
+import { getCollection } from 'astro:content';
+import SectionHead from './SectionHead.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
+  .slice(0, 4);
+---
+
+<section class="block" id="perspectives" style="background:#fff">
+  <div class="wrap">
+    <SectionHead label="Perspectives" />
+    <div class="split split-end" style="margin-top:48px">
+      <h2 class="display display-2">The voice of <em>value-add.</em></h2>
+      <p class="side-note">
+        Plain-spoken analysis from the operators actually doing the deals — no gurus, no secrets
+        for sale.
+      </p>
+    </div>
+    <div style="margin-top:56px">
+      {
+        posts.length > 0 ? (
+          posts.map((post) => (
+            <a class="article" href={`/blog/${post.id}`}>
+              <span class="cat">{post.data.tags?.[0] ?? 'Field Notes'}</span>
+              <h3>{post.data.title}</h3>
+              <span class="date">
+                {post.data.publishedAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              </span>
+              <span class="arr">⟶</span>
+            </a>
+          ))
+        ) : (
+          <div class="perspectives-note">
+            <p>
+              Field Notes — our written analysis on underwriting, operations, and the Dallas–Fort
+              Worth market — publishes here soon. Until then, the operators are reachable the
+              old-fashioned way.
+            </p>
+            <a class="btn line" href="mailto:invest@reapcapital.com?subject=Field%20Notes">
+              Ask Us Directly <span aria-hidden="true">⟶</span>
+            </a>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>

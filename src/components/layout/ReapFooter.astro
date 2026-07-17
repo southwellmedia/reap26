@@ -1,0 +1,43 @@
+---
+/**
+ * ReapFooter
+ * Deep-ink footer with wordmark, link columns, and legal strap.
+ */
+import wordmark from '@/assets/reap/reap-wordmark-white.png';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="reap-footer">
+  <div class="foot">
+    <div>
+      <img src={wordmark.src} width="200" height={Math.round((wordmark.height / wordmark.width) * 200)} alt="Reap Capital" class="wordmark" loading="lazy" />
+      <p>
+        An IRR-driven, vertically integrated, value-add operator based in Dallas–Fort Worth.
+        Recognize opportunity. Reap Capital.
+      </p>
+    </div>
+    <div>
+      <h2>Firm</h2>
+      <a href="/#firm">About</a>
+      <a href="/#method">Method</a>
+      <a href="/#portfolio">Track Record</a>
+      <a href="/#team">Team</a>
+      <a href="/#perspectives">Perspectives</a>
+    </div>
+    <div>
+      <h2>Investors</h2>
+      <a href="/invest">Current Offerings</a>
+      <a href="/invest">Request Access</a>
+    </div>
+    <div>
+      <h2>Contact</h2>
+      <span class="plain">Dallas–Fort Worth, TX</span>
+      <a href="mailto:invest@reapcapital.com">invest@reapcapital.com</a>
+    </div>
+  </div>
+  <div class="legal">
+    <span>© {year} Reap Capital. All rights reserved.</span>
+    <span class="strap">Real Estate • Private Equity • Investing</span>
+  </div>
+</footer>

@@ -18,10 +18,13 @@ const sortedPosts = posts.sort(
 
       {sortedPosts.length === 0 ? (
         <div class="text-center py-12">
-          <p class="text-muted-foreground">No posts yet. Create your first post in</p>
-          <code class="bg-muted px-2 py-1 rounded text-sm mt-2 inline-block">
-            src/content/blog/
-          </code>
+          <p class="text-muted-foreground">
+            Perspectives — plain-spoken analysis from the operators doing the deals — publishes
+            here soon.
+          </p>
+          <a href="mailto:invest@reapcapital.com?subject=Field%20Notes" class="mt-4 inline-block underline underline-offset-4">
+            Ask us directly in the meantime
+          </a>
         </div>
       ) : (
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -30,7 +33,7 @@ const sortedPosts = posts.sort(
               <a href={`/blog/${post.id}`} class="block">
                 {post.data.image && (
                   <img
-                    src={post.data.image}
+                    src={post.data.image.src}
                     alt={post.data.title}
                     class="aspect-video w-full rounded-lg object-cover mb-4"
                   />

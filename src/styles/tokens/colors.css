@@ -6,7 +6,8 @@
    ============================================================================= */
 
 @import './primitives.css';
-@import '../themes/default.css';
-/* To use the midnight theme, replace the line above with:
+@import '../themes/reap.css';
+/* To use another theme, replace the line above with:
+   @import '../themes/default.css';
    @import '../themes/midnight.css';
 */

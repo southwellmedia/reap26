@@ -1,0 +1,18 @@
+---
+/**
+ * SectionHead
+ * Wide-tracked eyebrow with a hairline gold rule running out to the right.
+ * (The eagle glyph is reserved for the nav, testimonial, and watermarks so
+ * gold stays rare — see design principle 2.)
+ */
+interface Props {
+  label: string;
+  onDark?: boolean;
+}
+
+const { label, onDark = false } = Astro.props;
+---
+
+<div class="sec-head">
+  <span class:list={['eyebrow', { 'on-dark': onDark }]}>{label}</span>
+</div>
