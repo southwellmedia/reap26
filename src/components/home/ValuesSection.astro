@@ -1,0 +1,39 @@
+---
+/**
+ * ValuesSection
+ * "Why We Do It" — the five core values from reapcapital.com/about,
+ * as a hairline-ruled grid mirroring the dark panel's cols treatment.
+ */
+import SectionHead from './SectionHead.astro';
+
+const values = [
+  { name: 'Integrity', body: 'We stand by our morals and values even in the most difficult situations.' },
+  { name: 'Tenacity', body: 'We approach every challenge with unwavering determination and believe that every problem has a solution.' },
+  { name: 'Excellence', body: 'We strive to achieve the highest standards of professionalism and performance.' },
+  { name: 'Loyalty', body: 'We are committed and dedicated to our investors, our colleagues, and our firm.' },
+  { name: 'Discipline', body: 'We adhere to our processes and strategy when making investment decisions.' },
+];
+---
+
+<section class="block values-block">
+  <div class="wrap">
+    <SectionHead label="Why We Do It" />
+    <div class="split split-end" style="margin-top:48px">
+      <h2 class="display display-2">The compass for <em>every decision.</em></h2>
+      <p class="side-note">
+        Our core values are the fundamental beliefs we hold — the compass that guides the behavior
+        of our people and our firm in every action and decision.
+      </p>
+    </div>
+    <div class="values-grid">
+      {
+        values.map((value) => (
+          <div>
+            <h3>{value.name}</h3>
+            <p>{value.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

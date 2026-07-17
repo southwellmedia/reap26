@@ -1,7 +1,9 @@
 ---
 /**
  * PortfolioSection
- * "Track Record" — featured active deal plus full-cycle property cards.
+ * "Track Record" — data verified against reapcapital.com/track-record.
+ * Featured active deal (The Landry) + three full-cycle highlight cards,
+ * then the complete property index as a compact thumbnail ledger.
  */
 import { Image } from 'astro:assets';
 import SectionHead from './SectionHead.astro';
@@ -10,28 +12,41 @@ import towers from '@/assets/reap/towers-dusk.jpg';
 import skyline from '@/assets/reap/dallas-skyline.jpg';
 import aerial from '@/assets/reap/hero-aerial-olive.webp';
 
-const properties = [
+const highlights = [
   {
     image: towers,
-    alt: 'The Bryant',
-    meta: 'Full Cycle · Dallas, TX',
-    name: 'The Bryant',
-    blurb: '322 units repositioned with a standardized modern scope.',
+    alt: 'Sierra Heights',
+    meta: 'Full Cycle · Irving, TX',
+    name: 'Sierra Heights',
+    blurb: '136 units taken full cycle in 25 months — a 37.24% actual IRR and 1.86x equity multiple.',
   },
   {
     image: skyline,
-    alt: 'The Calvin',
-    meta: 'Full Cycle · Plano, TX',
-    name: 'The Calvin',
-    blurb: '167 units with resort-style amenities, sold after a 25-month hold.',
+    alt: 'Liberty Park',
+    meta: 'Full Cycle · Dallas, TX',
+    name: 'Liberty Park',
+    blurb: '67 units bought direct from the seller as a stabilized high-yield play — 49% actual IRR, 2.05x in 23 months.',
   },
   {
     image: aerial,
-    alt: 'The Warren',
-    meta: 'Full Cycle · Dallas, TX',
-    name: 'The Warren',
-    blurb: '220 units acquired below replacement cost and fully turned.',
+    alt: 'Hwy 380 Self Storage',
+    meta: 'Full Cycle · Texas',
+    name: 'Hwy 380 Self Storage',
+    blurb: 'A mismanaged facility at 16% occupancy, rebuilt into a 61.49% actual IRR and 2.90x in 27 months.',
   },
+];
+
+const index = [
+  { image: apartment, name: 'The Haven', meta: 'San Antonio, TX', figure: 'Active · Target IRR 18–21%' },
+  { image: skyline, name: 'The Bryant', meta: 'Dallas, TX · 322 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: towers, name: 'The Charlie', meta: 'Dallas, TX · 314 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: aerial, name: 'The Warren', meta: 'Dallas, TX · 220 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: apartment, name: 'Sutton on Park Lane', meta: 'Dallas, TX · 196 Units', figure: 'Active · Target IRR 15.6%' },
+  { image: towers, name: 'The Calvin', meta: 'Plano, TX · 167 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: skyline, name: 'Paxton at Lake Highlands', meta: 'Dallas, TX · 1031 Exchange', figure: 'Active · Target IRR 15.8%' },
+  { image: aerial, name: 'The Chandler', meta: 'Dallas–Fort Worth, TX', figure: 'Active · Target IRR 15.31%' },
+  { image: skyline, name: 'The Mirabel', meta: 'Grand Prairie, TX · 86 Units', figure: 'Active · Acquired 2022' },
+  { image: towers, name: 'Beach at Bayshore', meta: 'Tampa, FL · 6 Units', figure: 'Full Cycle · 1.50x Multiple' },
 ];
 ---
 
@@ -56,14 +71,14 @@ const properties = [
         </p>
         <div class="feature-stats">
           <div><div class="n">288</div><div class="l">Units</div></div>
-          <div><div class="n">21.9%</div><div class="l">Projected IRR</div></div>
-          <div><div class="n">2.47x</div><div class="l">Equity Multiple</div></div>
+          <div><div class="n">21.64%</div><div class="l">Target IRR</div></div>
+          <div><div class="n">2.45x</div><div class="l">Equity Multiple</div></div>
         </div>
       </div>
     </div>
     <div class="props">
       {
-        properties.map((prop) => (
+        highlights.map((prop) => (
           <div class="prop">
             <div class="ph">
               <Image src={prop.image} alt={prop.alt} widths={[480, 720]} sizes="(max-width: 760px) 100vw, 33vw" />
@@ -73,6 +88,18 @@ const properties = [
               <h4>{prop.name}</h4>
               <p class="blurb">{prop.blurb}</p>
             </div>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prop-index">
+      {
+        index.map((prop) => (
+          <div class="prop-row">
+            <Image class="thumb" src={prop.image} alt="" widths={[160]} sizes="72px" />
+            <h4>{prop.name}</h4>
+            <span class="meta">{prop.meta}</span>
+            <span class="fig">{prop.figure}</span>
           </div>
         ))
       }

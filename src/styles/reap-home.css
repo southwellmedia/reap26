@@ -180,6 +180,22 @@
 .reap-home .prop .blurb { margin: 0; font-size: 14px; color: rgba(0, 0, 0, 0.6); }
 .reap-home .prop .meta { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
 
+/* complete property index — compact thumbnail ledger */
+.reap-home .prop-index { margin-top: 72px; }
+.reap-home .prop-row { display: grid; grid-template-columns: 72px 1fr auto auto; gap: 28px; align-items: center; padding: 18px 0; border-top: 1px solid var(--reap-hairline); }
+.reap-home .prop-row:last-child { border-bottom: 1px solid var(--reap-hairline); }
+.reap-home .prop-row .thumb { width: 72px; height: 48px; object-fit: cover; display: block; }
+.reap-home .prop-row h4 { font-family: var(--font-display); font-variant-ligatures: none; font-size: 19px; font-weight: 400; margin: 0; }
+.reap-home .prop-row .meta { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
+.reap-home .prop-row .fig { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-text); justify-self: end; text-align: right; }
+
+/* why we do it — core values grid */
+.reap-home .values-block { background: #fff; padding-top: 110px; padding-bottom: 110px; }
+.reap-home .values-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--reap-hairline); border: 1px solid var(--reap-hairline); margin-top: 64px; }
+.reap-home .values-grid > div { background: #fff; padding: 36px 28px; display: flex; flex-direction: column; gap: 12px; }
+.reap-home .values-grid h3 { font-family: var(--font-display); font-variant-ligatures: none; font-size: 21px; font-weight: 400; margin: 0; }
+.reap-home .values-grid p { margin: 0; font-size: 13.5px; line-height: 1.7; color: rgba(0, 0, 0, 0.62); }
+
 /* team */
 .reap-home .team { background: var(--gray-100); }
 .reap-home .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 72px; }
@@ -369,6 +385,9 @@
   .reap-home .feature { grid-template-columns: 1fr; }
   .reap-home .feature-img { min-height: 380px; }
   .reap-home .props { grid-template-columns: 1fr 1fr; }
+  .reap-home .values-grid { grid-template-columns: 1fr 1fr; }
+  .reap-home .prop-row { grid-template-columns: 72px 1fr auto; }
+  .reap-home .prop-row .meta { display: none; }
   .reap-home .team-grid { grid-template-columns: 1fr 1fr; }
   .reap-home .team-lead { grid-template-columns: 1fr; }
   .reap-home .team-lead .ph { min-height: 420px; }
@@ -411,6 +430,10 @@
   .reap-home .step { grid-template-columns: 1fr; gap: 14px; padding: 36px 0; }
   .reap-home .step p { grid-column: 1; }
   .reap-home .props { grid-template-columns: 1fr; }
+  .reap-home .values-grid { grid-template-columns: 1fr; }
+  .reap-home .prop-row { grid-template-columns: 56px 1fr; gap: 16px; }
+  .reap-home .prop-row .thumb { width: 56px; height: 40px; }
+  .reap-home .prop-row .fig { grid-column: 2; justify-self: start; text-align: left; }
   .reap-home .team-grid { grid-template-columns: 1fr; }
   .reap-home .feature-body { padding: 40px 28px; }
   .reap-home .feature-stats { gap: 28px; flex-wrap: wrap; }
