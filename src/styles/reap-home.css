@@ -180,14 +180,40 @@
 .reap-home .prop .blurb { margin: 0; font-size: 14px; color: rgba(0, 0, 0, 0.6); }
 .reap-home .prop .meta { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
 
-/* complete property index — compact thumbnail ledger */
+/* complete property index — ledger rows over faded property photography */
 .reap-home .prop-index { margin-top: 72px; }
-.reap-home .prop-row { display: grid; grid-template-columns: 72px 1fr auto auto; gap: 28px; align-items: center; padding: 18px 0; border-top: 1px solid var(--reap-hairline); }
+.reap-home .prop-row { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr auto auto; gap: 28px; align-items: center; padding: 30px 28px; border-top: 1px solid var(--reap-hairline); text-decoration: none; color: inherit; }
 .reap-home .prop-row:last-child { border-bottom: 1px solid var(--reap-hairline); }
-.reap-home .prop-row .thumb { width: 72px; height: 48px; object-fit: cover; display: block; }
-.reap-home .prop-row h4 { font-family: var(--font-display); font-variant-ligatures: none; font-size: 19px; font-weight: 400; margin: 0; }
+/* faded photo layer — brightens and drifts on hover */
+.reap-home .prop-row .row-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.reap-home .prop-row .row-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block; opacity: 0.16; filter: grayscale(35%); transform: scale(1.03); transition: opacity 0.35s ease, filter 0.35s ease, transform 1.2s ease; }
+/* readability scrim between photo and text — strongest where the name sits */
+.reap-home .prop-row::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.55) 55%, rgba(255, 255, 255, 0.85) 100%); transition: opacity 0.35s ease; }
+.reap-home .prop-row > h4,
+.reap-home .prop-row > .meta,
+.reap-home .prop-row > .fig { position: relative; z-index: 2; }
+.reap-home .prop-row h4 { font-family: var(--font-display); font-variant-ligatures: none; font-size: 20px; font-weight: 400; margin: 0; }
 .reap-home .prop-row .meta { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
 .reap-home .prop-row .fig { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-text); justify-self: end; text-align: right; }
+/* hover/focus — photo wakes up, gold hairline draws in at the left edge */
+.reap-home .prop-row::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold-400); transform: scaleY(0); transform-origin: top; transition: transform 0.3s ease; z-index: 2; }
+.reap-home .prop-row:hover .row-bg img,
+.reap-home .prop-row:focus-visible .row-bg img { opacity: 0.45; filter: grayscale(0%); transform: scale(1.08); }
+.reap-home .prop-row:hover::before,
+.reap-home .prop-row:focus-visible::before { opacity: 0.82; }
+.reap-home .prop-row:hover::after,
+.reap-home .prop-row:focus-visible::after { transform: scaleY(1); }
+.reap-home .prop-row.is-link:focus-visible { outline: 2px solid var(--gold-600); outline-offset: -2px; }
+/* case-study arrow slides in beside the figure */
+.reap-home .prop-row .row-arrow { display: inline-block; margin-left: 8px; opacity: 0; transform: translateX(-6px); transition: opacity 0.25s ease, transform 0.25s ease; }
+.reap-home .prop-row.is-link:hover .row-arrow,
+.reap-home .prop-row.is-link:focus-visible .row-arrow { opacity: 1; transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .reap-home .prop-row .row-bg img { transform: none; transition: opacity 0.35s ease, filter 0.35s ease; }
+  .reap-home .prop-row:hover .row-bg img,
+  .reap-home .prop-row:focus-visible .row-bg img { transform: none; }
+  .reap-home .prop-row .row-arrow { transform: none; transition: opacity 0.25s ease; }
+}
 
 /* why we do it — core values grid */
 .reap-home .values-block { background: #fff; padding-top: 110px; padding-bottom: 110px; }
@@ -261,6 +287,12 @@
 .reap-home .cta { background: var(--green-900); position: relative; overflow: hidden; text-align: center; }
 .reap-home .cta .bgimg { position: absolute; inset: 0; background-image: var(--cta-photo); background-size: cover; background-position: center; background-repeat: no-repeat; }
 .reap-home .cta .bgscrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(57, 67, 52, 0.93), rgba(37, 44, 33, 0.95)); }
+/* video-backed CTA — hero footage under a slightly lighter scrim so the motion reads */
+.reap-home .cta .bgvideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.reap-home .cta .bgscrim.video { background: linear-gradient(180deg, rgba(37, 44, 33, 0.92) 0%, rgba(45, 53, 40, 0.8) 50%, rgba(37, 44, 33, 0.95) 100%); }
+@media (prefers-reduced-motion: reduce) {
+  .reap-home .cta .bgvideo { display: none; }
+}
 .reap-home .cta .watermark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 90%; pointer-events: none; }
 .reap-home .cta-in { position: relative; display: flex; flex-direction: column; align-items: center; gap: 30px; padding: 150px 64px; }
 .reap-home .cta h2 { font-size: clamp(40px, 5vw, 64px); color: #fff; max-width: 24ch; }
@@ -386,7 +418,7 @@
   .reap-home .feature-img { min-height: 380px; }
   .reap-home .props { grid-template-columns: 1fr 1fr; }
   .reap-home .values-grid { grid-template-columns: 1fr 1fr; }
-  .reap-home .prop-row { grid-template-columns: 72px 1fr auto; }
+  .reap-home .prop-row { grid-template-columns: 1fr auto; }
   .reap-home .prop-row .meta { display: none; }
   .reap-home .team-grid { grid-template-columns: 1fr 1fr; }
   .reap-home .team-lead { grid-template-columns: 1fr; }
@@ -414,6 +446,69 @@
   .reap-home .invest-form-inner { padding: 48px 24px 56px; gap: 32px; }
 }
 
+/* =============================================================================
+   Subpages — shared interior-page chrome (SubpageLayout) + case studies
+   ============================================================================= */
+.reap-home .subhero { position: relative; background: var(--green-950); overflow: hidden; }
+.reap-home .subhero-photo { position: absolute; inset: 0; background-image: var(--subhero-photo); background-size: cover; background-position: center; }
+/* same olive scrim recipe as the homepage hero — deep at the edges for nav/type legibility */
+.reap-home .subhero-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(37, 44, 33, 0.94) 0%, rgba(45, 53, 40, 0.82) 55%, rgba(37, 44, 33, 0.97) 100%); }
+.reap-home .subhero-in { position: relative; padding-top: 190px; padding-bottom: 72px; display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+.reap-home .subhero-title { font-size: clamp(36px, 4.6vw, 72px); color: #fff; }
+.reap-home .subhero-lede { margin: 0; font-size: 18px; line-height: 1.75; color: rgba(255, 255, 255, 0.85); max-width: 56ch; }
+.reap-home .subhero .ticker { position: relative; }
+.reap-home .back-link { font-size: 12px; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255, 255, 255, 0.72); text-decoration: none; transition: color 0.15s ease; }
+.reap-home .back-link:hover { color: var(--gold-400); text-decoration: none; }
+
+/* highlight cards double as links into the case studies */
+.reap-home a.prop { display: block; text-decoration: none; color: inherit; }
+.reap-home a.prop:hover { text-decoration: none; color: inherit; }
+.reap-home .prop .more { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-text); margin-top: 6px; }
+.reap-home .port-cta { margin-top: 56px; display: flex; justify-content: flex-start; }
+
+/* case study — narrative prose left, sticky deal-summary rail right */
+.reap-home .case-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 88px; align-items: start; }
+.reap-home .case-aside { position: sticky; top: 110px; display: flex; flex-direction: column; gap: 32px; }
+.reap-home .case-facts { background: var(--green-950); padding: 32px; }
+.reap-home .case-facts .eyebrow { display: block; }
+.reap-home .case-facts dl { margin: 14px 0 0; }
+.reap-home .case-facts .row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-top: 1px solid var(--border-on-dark); }
+.reap-home .case-facts dt { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+.reap-home .case-facts dd { margin: 0; font-size: 14px; font-weight: 600; color: #fff; text-align: right; }
+.reap-home .case-aside figure { margin: 0; }
+.reap-home .case-aside figure img { width: 100%; height: auto; display: block; }
+.reap-home .case-aside figcaption { margin-top: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
+
+/* case study — narrative prose (rendered markdown) */
+.reap-home .case-body { max-width: 68ch; }
+.reap-home .case-body h2 { font-family: var(--font-display); font-variant-ligatures: none; font-size: 29px; font-weight: 400; line-height: 1.2; margin: 56px 0 18px; }
+.reap-home .case-body h2:first-child { margin-top: 0; }
+.reap-home .case-body p { margin: 0 0 20px; font-size: 16.5px; line-height: 1.8; color: rgba(0, 0, 0, 0.72); }
+.reap-home .case-body p:last-child { margin-bottom: 0; }
+.reap-home .case-body em { color: rgba(0, 0, 0, 0.55); }
+
+/* case study — prev/next between studies */
+.reap-home .case-nav { display: flex; justify-content: space-between; gap: 24px; border-top: 1px solid var(--reap-hairline); margin-top: 88px; padding-top: 32px; }
+.reap-home .case-nav a { text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 8px; }
+.reap-home .case-nav a.next { text-align: right; align-items: flex-end; margin-left: auto; }
+.reap-home .case-nav .dir { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-text); }
+.reap-home .case-nav .name { font-family: var(--font-display); font-variant-ligatures: none; font-size: 23px; transition: color 0.15s ease; }
+.reap-home .case-nav a:hover .name { color: var(--green-700); }
+
+.reap-home .note-disclosure { margin: 28px 0 0; font-size: 11.5px; letter-spacing: 0.04em; color: var(--text-muted); }
+
+@media (max-width: 1100px) {
+  .reap-home .subhero-in { padding-top: 170px; }
+  .reap-home .case-layout { grid-template-columns: 1fr; gap: 56px; }
+  .reap-home .case-aside { position: static; }
+}
+
+@media (max-width: 760px) {
+  .reap-home .subhero-in { padding-top: 140px; padding-bottom: 56px; }
+  .reap-home .case-nav { flex-direction: column; gap: 28px; }
+  .reap-home .case-nav a.next { text-align: left; align-items: flex-start; margin-left: 0; }
+}
+
 @media (max-width: 760px) {
   .reap-home .wrap { padding: 0 24px; }
   .reap-nav .nav-in { padding-left: 24px; padding-right: 24px; gap: 24px; }
@@ -431,9 +526,8 @@
   .reap-home .step p { grid-column: 1; }
   .reap-home .props { grid-template-columns: 1fr; }
   .reap-home .values-grid { grid-template-columns: 1fr; }
-  .reap-home .prop-row { grid-template-columns: 56px 1fr; gap: 16px; }
-  .reap-home .prop-row .thumb { width: 56px; height: 40px; }
-  .reap-home .prop-row .fig { grid-column: 2; justify-self: start; text-align: left; }
+  .reap-home .prop-row { grid-template-columns: 1fr; gap: 8px; padding: 24px 20px; }
+  .reap-home .prop-row .fig { justify-self: start; text-align: left; }
   .reap-home .team-grid { grid-template-columns: 1fr; }
   .reap-home .feature-body { padding: 40px 28px; }
   .reap-home .feature-stats { gap: 28px; flex-wrap: wrap; }

@@ -1,0 +1,177 @@
+---
+/**
+ * Property case study — /track-record/[slug]
+ * One page per `properties` entry flagged `caseStudy: true`. Photographic
+ * subpage hero with the headline metrics as a ticker strip, then a split
+ * body: narrative prose on the left, a sticky deal-summary panel and
+ * property photography on the right.
+ */
+import { getCollection, render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import SubpageLayout from '@/layouts/SubpageLayout.astro';
+import SectionHead from '@/components/home/SectionHead.astro';
+import PropertyMapSection from '@/components/map/PropertyMapSection.astro';
+import CtaVideo from '@/components/patterns/CtaVideo.astro';
+import { PERFORMANCE_DISCLOSURE } from '@/config/stats.config';
+import { byOrder, statusLabel } from '@/lib/properties';
+
+export async function getStaticPaths() {
+  const studies = (await getCollection('properties', ({ data }) => data.caseStudy)).sort(byOrder);
+  return studies.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      prev: i > 0 ? studies[i - 1] : null,
+      next: i < studies.length - 1 ? studies[i + 1] : null,
+    },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const hero = await getImage({ src: data.image, width: 1920, format: 'webp' });
+
+// Headline metrics for the hero ticker — published figures only
+const heroStats: { n: string; l: string }[] =
+  data.status === 'full-cycle'
+    ? [
+        ...(data.units ? [{ n: String(data.units), l: 'Units' }] : []),
+        ...(data.actualIrr ? [{ n: data.actualIrr, l: 'Actual IRR' }] : []),
+        ...(data.equityMultiple ? [{ n: data.equityMultiple, l: 'Equity Multiple' }] : []),
+        ...(data.holdMonths ? [{ n: String(data.holdMonths), l: 'Month Hold' }] : []),
+      ]
+    : [
+        ...(data.featureStats ?? [
+          ...(data.units ? [{ n: String(data.units), l: 'Units' }] : []),
+          ...(data.strategy ? [{ n: data.strategy, l: 'Strategy' }] : []),
+          ...(data.targetIrr ? [{ n: data.targetIrr, l: 'Target IRR' }] : []),
+        ]),
+      ];
+if (heroStats.length === 3) {
+  heroStats.push({ n: statusLabel(entry), l: 'Status' });
+}
+
+// Full fact sheet for the deal-summary rail
+const facts: { label: string; value: string }[] = [
+  { label: 'Location', value: data.location },
+  ...(data.submarket ? [{ label: 'Submarket', value: data.submarket }] : []),
+  { label: 'Asset Type', value: data.assetType === 'self-storage' ? 'Self-Storage' : 'Multifamily' },
+  ...(data.strategy ? [{ label: 'Strategy', value: data.strategy }] : []),
+  ...(data.units ? [{ label: 'Units', value: String(data.units) }] : []),
+  { label: 'Status', value: statusLabel(entry) },
+  ...(data.holdMonths ? [{ label: 'Hold Period', value: `${data.holdMonths} Months` }] : []),
+  ...(data.targetIrr ? [{ label: 'Target IRR', value: data.targetIrr }] : []),
+  ...(data.actualIrr ? [{ label: 'Actual IRR', value: data.actualIrr }] : []),
+  ...(data.equityMultiple ? [{ label: 'Equity Multiple', value: data.equityMultiple }] : []),
+];
+
+// Rail photography — gallery shots when we have them, else the property image
+const asidePhotos =
+  data.gallery.length > 0 ? data.gallery : [{ src: data.image, alt: data.imageAlt }];
+---
+
+<SubpageLayout
+  title={`${data.name} — Case Study`}
+  description={data.description ?? data.blurb ?? `${data.name} — a Reap Capital ${statusLabel(entry).toLowerCase()} investment in ${data.location}.`}
+  eyebrow={`${statusLabel(entry)} · ${data.location}`}
+  heroPhoto={hero.src}
+  image={hero.src}
+  imageAlt={data.imageAlt}
+>
+  <a class="back-link" href="/track-record" slot="before-heading">
+    <span aria-hidden="true">⟵</span> Track Record
+  </a>
+  <Fragment slot="heading">{data.name}</Fragment>
+  {
+    heroStats.length > 0 && (
+      <div class="wrap" slot="hero-extra">
+        <div class="ticker">
+          {heroStats.map((stat) => (
+            <div>
+              <div class="n">{stat.n}</div>
+              <div class="l">{stat.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  <section class="block">
+    <div class="wrap">
+      <div class="case-layout">
+        <div class="case-body">
+          <Content />
+        </div>
+        <aside class="case-aside">
+          <div class="case-facts">
+            <span class="eyebrow on-dark">Deal Summary</span>
+            <dl>
+              {
+                facts.map((fact) => (
+                  <div class="row">
+                    <dt>{fact.label}</dt>
+                    <dd>{fact.value}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+          {
+            asidePhotos.map((photo) => (
+              <figure>
+                <Image src={photo.src} alt={photo.alt} widths={[480, 720, 960]} sizes="(max-width: 1100px) 100vw, 33vw" />
+                <figcaption>{photo.alt}</figcaption>
+              </figure>
+            ))
+          }
+        </aside>
+      </div>
+
+      {
+        data.coords && (
+          <div id="location" style="margin-top:88px">
+            <SectionHead label="Location" />
+            <div style="margin-top:40px">
+              <PropertyMapSection only={entry.id} />
+            </div>
+          </div>
+        )
+      }
+
+      <nav class="case-nav" aria-label="More case studies">
+        {
+          prev && (
+            <a href={`/track-record/${prev.id}`}>
+              <span class="dir"><span aria-hidden="true">⟵</span> Previous Case Study</span>
+              <span class="name">{prev.data.name}</span>
+            </a>
+          )
+        }
+        {
+          next && (
+            <a class="next" href={`/track-record/${next.id}`}>
+              <span class="dir">Next Case Study <span aria-hidden="true">⟶</span></span>
+              <span class="name">{next.data.name}</span>
+            </a>
+          )
+        }
+      </nav>
+      <p class="note-disclosure">{PERFORMANCE_DISCLOSURE}</p>
+    </div>
+  </section>
+
+  <section class="cta">
+    <CtaVideo />
+    <div class="cta-in">
+      <span class="eyebrow on-dark">Invest With Us</span>
+      <h2 class="display">The next deal is <em>underwritten the same way.</em></h2>
+      <p>Request access to see current offerings and the numbers behind them.</p>
+      <div class="cta-actions">
+        <a class="btn gold" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
+      </div>
+    </div>
+  </section>
+</SubpageLayout>

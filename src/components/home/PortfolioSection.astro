@@ -1,68 +1,21 @@
 ---
 /**
  * PortfolioSection
- * "Track Record" — data verified against reapcapital.com/track-record, with
- * the actual property photography sourced from the live site.
- * Featured deal + three full-cycle highlight cards, then the complete
- * property index as a compact thumbnail ledger.
+ * "Track Record" — homepage teaser for /track-record. Reads the `properties`
+ * content collection (single source of truth, data verified against
+ * reapcapital.com/track-record). Featured deal + three full-cycle highlight
+ * cards linking into their case studies, then the interactive portfolio map
+ * and a CTA into the full track record page.
  */
+import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import SectionHead from './SectionHead.astro';
-// La Fortuna photography sourced from the property site (fortuna-umber.vercel.app);
-// facts from La Fortuna_Teaser.pdf. Alternates: la-fortuna-pool.webp, la-fortuna-grounds.webp
-import laFortuna from '@/assets/reap/properties/la-fortuna-courtyard.webp';
-import landry from '@/assets/reap/properties/the-landry.jpg';
-import sierraHeights from '@/assets/reap/properties/sierra-heights.jpg';
-import libertyPark from '@/assets/reap/properties/liberty-park.jpg';
-import hwy380 from '@/assets/reap/properties/hwy-380.jpg';
-import haven from '@/assets/reap/properties/haven-sage.webp';
-import bryant from '@/assets/reap/properties/the-bryant.jpg';
-import charlie from '@/assets/reap/properties/the-charlie.jpg';
-import warren from '@/assets/reap/properties/the-warren.jpg';
-import sutton from '@/assets/reap/properties/sutton.jpg';
-import calvin from '@/assets/reap/properties/the-calvin.jpg';
-import paxton from '@/assets/reap/properties/paxton.jpg';
-import chandler from '@/assets/reap/properties/the-chandler.jpg';
-import mirabel from '@/assets/reap/properties/the-mirabel.jpg';
-import bayshore from '@/assets/reap/properties/bayshore.webp';
+import PropertyMapSection from '@/components/map/PropertyMapSection.astro';
+import { byOrder, statusLabel } from '@/lib/properties';
 
-const highlights = [
-  {
-    image: sierraHeights,
-    alt: 'Sierra Heights, Irving TX',
-    meta: 'Full Cycle · Irving, TX',
-    name: 'Sierra Heights',
-    blurb: '136 units taken full cycle in 25 months — a 37.24% actual IRR and 1.86x equity multiple.',
-  },
-  {
-    image: libertyPark,
-    alt: 'Liberty Park, Dallas TX',
-    meta: 'Full Cycle · Dallas, TX',
-    name: 'Liberty Park',
-    blurb: '67 units bought direct from the seller as a stabilized high-yield play — 49% actual IRR, 2.05x in 23 months.',
-  },
-  {
-    image: hwy380,
-    alt: 'Hwy 380 Self Storage',
-    meta: 'Full Cycle · Texas',
-    name: 'Hwy 380 Self Storage',
-    blurb: 'A mismanaged facility at 16% occupancy, rebuilt into a 61.49% actual IRR and 2.90x in 27 months.',
-  },
-];
-
-const index = [
-  { image: landry, name: 'The Landry', meta: 'Arlington, TX · 288 Units', figure: 'Active · Target IRR 21.64%' },
-  { image: haven, name: 'The Haven', meta: 'San Antonio, TX', figure: 'Active · Target IRR 18–21%' },
-  { image: bryant, name: 'The Bryant', meta: 'Dallas, TX · 322 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: charlie, name: 'The Charlie', meta: 'Dallas, TX · 314 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: warren, name: 'The Warren', meta: 'Dallas, TX · 220 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: sutton, name: 'Sutton on Park Lane', meta: 'Dallas, TX · 196 Units', figure: 'Active · Target IRR 15.6%' },
-  { image: calvin, name: 'The Calvin', meta: 'Plano, TX · 167 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: paxton, name: 'Paxton at Lake Highlands', meta: 'Dallas, TX · 1031 Exchange', figure: 'Active · Target IRR 15.8%' },
-  { image: chandler, name: 'The Chandler', meta: 'Dallas–Fort Worth, TX', figure: 'Active · Target IRR 15.31%' },
-  { image: mirabel, name: 'The Mirabel', meta: 'Grand Prairie, TX · 86 Units', figure: 'Active · Acquired 2022' },
-  { image: bayshore, name: 'Beach at Bayshore', meta: 'Tampa, FL · 6 Units', figure: 'Full Cycle · 1.50x Multiple' },
-];
+const properties = await getCollection('properties');
+const featured = properties.find((p) => p.data.featured);
+const highlights = properties.filter((p) => p.data.highlight).sort(byOrder);
 ---
 
 <section class="block" id="portfolio">
@@ -71,54 +24,74 @@ const index = [
     <div class="port-head">
       <h2 class="display display-2">Every number is a <em>closed deal.</em></h2>
     </div>
-    <div class="feature">
-      <div class="feature-img">
-        <Image src={laFortuna} alt="La Fortuna, Dallas TX" widths={[720, 1080, 1600]} sizes="(max-width: 1100px) 100vw, 60vw" />
-        <span class="tag">Featured — Newest Acquisition</span>
-      </div>
-      <div class="feature-body">
-        <span class="meta">Dallas, Texas · North Dallas Submarket</span>
-        <h3>La Fortuna</h3>
-        <p>
-          A 230-unit infill community on Brookgreen Drive in North Dallas — a high-barrier,
-          supply-constrained submarket — acquired at a basis that compares favorably to
-          replacement cost, with in-place rents trailing renovated comps. A phased unit-turn
-          program closes that gap.
-        </p>
-        <div class="feature-stats">
-          <div><div class="n">230</div><div class="l">Units</div></div>
-          <div><div class="n">75240</div><div class="l">Infill North Dallas</div></div>
-          <div><div class="n">Value-Add</div><div class="l">Strategy</div></div>
+    {
+      featured && (
+        <div class="feature">
+          <div class="feature-img">
+            <Image
+              src={featured.data.image}
+              alt={featured.data.imageAlt}
+              widths={[720, 1080, 1600]}
+              sizes="(max-width: 1100px) 100vw, 60vw"
+            />
+            <span class="tag">Featured — Newest Acquisition</span>
+          </div>
+          <div class="feature-body">
+            <span class="meta">
+              {
+                featured.data.submarket
+                  ? `${featured.data.location} · ${featured.data.submarket}`
+                  : featured.data.location
+              }
+            </span>
+            <h3>{featured.data.name}</h3>
+            <p>{featured.data.blurb}</p>
+            {featured.data.featureStats && (
+              <div class="feature-stats">
+                {featured.data.featureStats.map((stat) => (
+                  <div>
+                    <div class="n">{stat.n}</div>
+                    <div class="l">{stat.l}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      )
+    }
     <div class="props">
       {
-        highlights.map((prop) => (
-          <div class="prop">
-            <div class="ph">
-              <Image src={prop.image} alt={prop.alt} widths={[480, 720]} sizes="(max-width: 760px) 100vw, 33vw" />
-            </div>
-            <div class="bd">
-              <span class="meta">{prop.meta}</span>
-              <h4>{prop.name}</h4>
-              <p class="blurb">{prop.blurb}</p>
-            </div>
-          </div>
-        ))
+        highlights.map((prop) => {
+          const body = (
+            <>
+              <div class="ph">
+                <Image src={prop.data.image} alt={prop.data.imageAlt} widths={[480, 720]} sizes="(max-width: 760px) 100vw, 33vw" />
+              </div>
+              <div class="bd">
+                <span class="meta">{statusLabel(prop)} · {prop.data.location}</span>
+                <h4>{prop.data.name}</h4>
+                <p class="blurb">{prop.data.blurb}</p>
+                {prop.data.caseStudy && (
+                  <span class="more">Read the Case Study <span aria-hidden="true">⟶</span></span>
+                )}
+              </div>
+            </>
+          );
+          return prop.data.caseStudy ? (
+            <a class="prop" href={`/track-record/${prop.id}`}>{body}</a>
+          ) : (
+            <div class="prop">{body}</div>
+          );
+        })
       }
     </div>
-    <div class="prop-index">
-      {
-        index.map((prop) => (
-          <div class="prop-row">
-            <Image class="thumb" src={prop.image} alt="" widths={[160]} sizes="72px" />
-            <h4>{prop.name}</h4>
-            <span class="meta">{prop.meta}</span>
-            <span class="fig">{prop.figure}</span>
-          </div>
-        ))
-      }
+    <div style="margin-top:72px">
+      <PropertyMapSection
+        showSrList
+        ctaHref="/track-record"
+        ctaLabel="View the Full Track Record"
+      />
     </div>
   </div>
 </section>

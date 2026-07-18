@@ -1,0 +1,53 @@
+---
+/**
+ * SubpageLayout
+ * Brand chrome for interior pages. Composes HomeLayout (ReapHeader/ReapFooter,
+ * nav scroll behavior, reap-home.css) and adds the subpage hero: a deep-olive
+ * band the fixed transparent nav sits over, with eyebrow + Playfair title.
+ *
+ * Pass `heroPhoto` (an optimized image URL, e.g. from getImage()) for the
+ * photographic variant used by case studies — it renders under the standard
+ * olive scrim so type and nav stay legible.
+ *
+ * Slots:
+ *  - heading        (required) h1 content; use <em> for the gold accent
+ *  - before-heading  optional, above the eyebrow (e.g. back-link)
+ *  - hero-extra      optional, full-width strip at the bottom of the hero
+ *                    (e.g. <div class="wrap"><div class="ticker">…</div></div>)
+ *  - default         page body
+ */
+import HomeLayout from './HomeLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  lede?: string;
+  heroPhoto?: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+const { title, description, eyebrow, lede, heroPhoto, image, imageAlt } = Astro.props;
+---
+
+<HomeLayout title={title} description={description} image={image} imageAlt={imageAlt}>
+  <section class="subhero">
+    {
+      heroPhoto && (
+        <>
+          <div class="subhero-photo" style={`--subhero-photo: url(${heroPhoto})`} aria-hidden="true" />
+          <div class="subhero-scrim" aria-hidden="true" />
+        </>
+      )
+    }
+    <div class="wrap subhero-in">
+      <slot name="before-heading" />
+      <span class="eyebrow on-dark">{eyebrow}</span>
+      <h1 class="display subhero-title"><slot name="heading" /></h1>
+      {lede && <p class="subhero-lede">{lede}</p>}
+    </div>
+    <slot name="hero-extra" />
+  </section>
+  <slot />
+</HomeLayout>

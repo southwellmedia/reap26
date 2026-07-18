@@ -1,0 +1,195 @@
+---
+/**
+ * Track Record — the full portfolio, deal by deal.
+ * Reads the `properties` content collection (single source of truth shared
+ * with the homepage portfolio section). Featured deal, full-cycle case study
+ * cards, then the complete ledger of every transaction.
+ */
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import SubpageLayout from '@/layouts/SubpageLayout.astro';
+import SectionHead from '@/components/home/SectionHead.astro';
+import PropertyMapSection from '@/components/map/PropertyMapSection.astro';
+import CtaVideo from '@/components/patterns/CtaVideo.astro';
+import { firmStats, PERFORMANCE_DISCLOSURE } from '@/config/stats.config';
+import { byOrder, byStatusThenOrder, ledgerFigure, ledgerMeta } from '@/lib/properties';
+
+const properties = await getCollection('properties');
+const featured = properties.find((p) => p.data.featured);
+const highlights = properties.filter((p) => p.data.highlight).sort(byOrder);
+const ledger = [...properties].sort(byStatusThenOrder);
+---
+
+<SubpageLayout
+  title="Track Record"
+  description={`Every acquisition and exit Reap Capital has sponsored — ${firmStats.transactions} transactions since ${firmStats.transactionsSinceYear}, ${firmStats.fullCycle} taken full cycle, with the numbers each produced.`}
+  eyebrow="Track Record"
+  lede={`${firmStats.transactions} transactions since ${firmStats.transactionsSinceYear}. ${firmStats.fullCycle} taken full cycle. What follows is the complete record — every acquisition, every exit, and the numbers each produced.`}
+>
+  <Fragment slot="heading">The full record, <em>deal by deal.</em></Fragment>
+  <div class="wrap" slot="hero-extra">
+    <div class="ticker">
+      <div><div class="n">{firmStats.avgIrr}</div><div class="l">Avg. IRR to Investors</div></div>
+      <div><div class="n">{firmStats.aum}</div><div class="l">Assets Under Management</div></div>
+      <div><div class="n">{firmStats.unitsSponsored}</div><div class="l">Units Sponsored</div></div>
+      <div><div class="n">{firmStats.fullCycle}</div><div class="l">Full-Cycle Investments</div></div>
+    </div>
+  </div>
+
+  {
+    featured && (
+      <section class="block" id="featured">
+        <div class="wrap">
+          <SectionHead label="Featured Acquisition" />
+          <div class="feature" style="margin-top:56px">
+            <div class="feature-img">
+              <Image
+                src={featured.data.image}
+                alt={featured.data.imageAlt}
+                widths={[720, 1080, 1600]}
+                sizes="(max-width: 1100px) 100vw, 60vw"
+              />
+              <span class="tag">Featured — Newest Acquisition</span>
+            </div>
+            <div class="feature-body">
+              <span class="meta">
+                {
+                  featured.data.submarket
+                    ? `${featured.data.location} · ${featured.data.submarket}`
+                    : featured.data.location
+                }
+              </span>
+              <h3>{featured.data.name}</h3>
+              <p>{featured.data.blurb}</p>
+              {featured.data.featureStats && (
+                <div class="feature-stats">
+                  {featured.data.featureStats.map((stat) => (
+                    <div>
+                      <div class="n">{stat.n}</div>
+                      <div class="l">{stat.l}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {featured.data.caseStudy && (
+                <div style="margin-top:14px">
+                  <a class="btn ghost" href={`/track-record/${featured.id}`}>
+                    Read the Case Study <span aria-hidden="true">⟶</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="block tinted" id="full-cycle">
+    <div class="wrap">
+      <SectionHead label="Full-Cycle Case Studies" />
+      <div class="port-head">
+        <h2 class="display display-2">Bought, executed, <em>returned.</em></h2>
+      </div>
+      <div class="props">
+        {
+          highlights.map((prop) =>
+            prop.data.caseStudy ? (
+              <a class="prop" href={`/track-record/${prop.id}`}>
+                <div class="ph">
+                  <Image src={prop.data.image} alt={prop.data.imageAlt} widths={[480, 720]} sizes="(max-width: 760px) 100vw, 33vw" />
+                </div>
+                <div class="bd">
+                  <span class="meta">{prop.data.status === 'active' ? 'Active' : 'Full Cycle'} · {prop.data.location}</span>
+                  <h4>{prop.data.name}</h4>
+                  <p class="blurb">{prop.data.blurb}</p>
+                  <span class="more">Read the Case Study <span aria-hidden="true">⟶</span></span>
+                </div>
+              </a>
+            ) : (
+              <div class="prop">
+                <div class="ph">
+                  <Image src={prop.data.image} alt={prop.data.imageAlt} widths={[480, 720]} sizes="(max-width: 760px) 100vw, 33vw" />
+                </div>
+                <div class="bd">
+                  <span class="meta">{prop.data.status === 'active' ? 'Active' : 'Full Cycle'} · {prop.data.location}</span>
+                  <h4>{prop.data.name}</h4>
+                  <p class="blurb">{prop.data.blurb}</p>
+                </div>
+              </div>
+            )
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  {/* No bottom padding — the property index block that follows provides the gap */}
+  <section class="block" id="portfolio-map" style="padding-bottom:0">
+    <div class="wrap">
+      <SectionHead label="Portfolio Map" />
+      <div style="margin-top:56px">
+        <PropertyMapSection />
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="portfolio-index">
+    <div class="wrap">
+      <SectionHead label="Complete Property Index" />
+      <div class="prop-index">
+        {
+          ledger.map((prop) => {
+            const body = (
+              <>
+                <div class="row-bg" aria-hidden="true">
+                  <Image
+                    src={prop.data.image}
+                    alt=""
+                    widths={[720, 1080, 1440]}
+                    sizes="(max-width: 1360px) 100vw, 1232px"
+                  />
+                </div>
+                <h4>{prop.data.name}</h4>
+                <span class="meta">{ledgerMeta(prop)}</span>
+                <span class="fig">
+                  {ledgerFigure(prop)}
+                  {prop.data.caseStudy && (
+                    <span class="row-arrow" aria-hidden="true">
+                      ⟶
+                    </span>
+                  )}
+                </span>
+              </>
+            );
+            return prop.data.caseStudy ? (
+              <a class="prop-row is-link" href={`/track-record/${prop.id}`}>
+                {body}
+              </a>
+            ) : (
+              <div class="prop-row">{body}</div>
+            );
+          })
+        }
+      </div>
+      <p class="note-disclosure">{PERFORMANCE_DISCLOSURE}</p>
+    </div>
+  </section>
+
+  <section class="cta">
+    <CtaVideo />
+    <div class="cta-in">
+      <span class="eyebrow on-dark">Invest With Us</span>
+      <h2 class="display">
+        {firmStats.transactions} deals on the record. <em>The next one is open.</em>
+      </h2>
+      <p>
+        The record above is the pitch. If the numbers hold up to your scrutiny, request access to
+        see current offerings.
+      </p>
+      <div class="cta-actions">
+        <a class="btn gold" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
+      </div>
+    </div>
+  </section>
+</SubpageLayout>

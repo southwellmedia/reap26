@@ -1,0 +1,159 @@
+---
+/**
+ * PropertyMapSection — server wrapper for the PropertyMap island.
+ *
+ * Reads the `properties` collection, resolves optimized card images, and
+ * serializes only what the island needs. Renders the setup prompt when no
+ * Google Maps API key is configured (island not emitted at all). With
+ * `showSrList` (homepage) a visually-hidden ledger of every property keeps
+ * the data crawlable and screen-reader reachable after the visible ledger
+ * was replaced by the map.
+ */
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import { PUBLIC_CONSENT_ENABLED, PUBLIC_GOOGLE_MAPS_API_KEY } from 'astro:env/client';
+import { byStatusThenOrder, ledgerFigure, ledgerMeta } from '@/lib/properties';
+import PropertyMap from './PropertyMap';
+import type { MapProperty, MapRegion } from './PropertyMap';
+
+interface Props {
+  showSrList?: boolean;
+  /** Full-bleed variant — map spans the viewport, chips bar stays on the page grid. */
+  fullBleed?: boolean;
+  /** Optional link at the right end of the chips bar (e.g. "View the Full Track Record"). */
+  ctaHref?: string;
+  ctaLabel?: string;
+  /** Single-property mode (case-study pages) — only this entry's pin, no chips. */
+  only?: string;
+}
+
+const { showSrList = false, fullBleed = false, ctaHref, ctaLabel, only } = Astro.props;
+
+const hasApiKey = !!PUBLIC_GOOGLE_MAPS_API_KEY;
+const collection = await getCollection('properties');
+const all = (only ? collection.filter((p) => p.id === only) : collection).sort(byStatusThenOrder);
+
+/** City-level classifier for the region chips. */
+function regionOf(coords: { lat: number; lng: number }): MapRegion {
+  if (coords.lng > -90) return 'tampa';
+  if (coords.lat < 31) return 'san-antonio';
+  return 'dfw';
+}
+
+const mapProperties: MapProperty[] = await Promise.all(
+  all
+    .filter((p) => p.data.coords)
+    .map(async (p) => {
+      const img = await getImage({ src: p.data.image, width: 640, format: 'webp' });
+      return {
+        id: p.id,
+        name: p.data.name,
+        lat: p.data.coords!.lat,
+        lng: p.data.coords!.lng,
+        image: img.src,
+        imageAlt: p.data.imageAlt,
+        meta: ledgerMeta(p),
+        figure: ledgerFigure(p),
+        status: p.data.status,
+        // No card link in single mode — it would point at the page it's on
+        href: p.data.caseStudy && !only ? `/track-record/${p.id}` : undefined,
+        region: regionOf(p.data.coords!),
+      };
+    })
+);
+---
+
+<div role="region" aria-label="Portfolio property map">
+  {
+    hasApiKey ? (
+      <PropertyMap
+        client:visible
+        apiKey={PUBLIC_GOOGLE_MAPS_API_KEY}
+        properties={mapProperties}
+        consentEnabled={PUBLIC_CONSENT_ENABLED}
+        wide={fullBleed}
+        ctaHref={ctaHref}
+        ctaLabel={ctaLabel}
+      />
+    ) : (
+      <div class="pmap-setup">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5.43 5.43A8.06 8.06 0 0 0 4 10c0 6 8 12 8 12a29.94 29.94 0 0 0 5-5" />
+          <path d="M19.18 13.52A8.66 8.66 0 0 0 20 10a8 8 0 0 0-8-8 7.88 7.88 0 0 0-3.52.82" />
+          <path d="M9.13 9.13a3 3 0 0 0 3.74 3.74" />
+          <path d="M14.9 9.25a3 3 0 0 0-2.15-2.16" />
+          <line x1="2" x2="22" y1="2" y2="22" />
+        </svg>
+        <p class="pmap-setup-title">Portfolio Map</p>
+        <p class="pmap-setup-desc">
+          Add <code>PUBLIC_GOOGLE_MAPS_API_KEY</code> to your <code>.env</code> file to enable the
+          interactive map.
+        </p>
+      </div>
+    )
+  }
+
+  {
+    showSrList && (
+      <ul class="sr-only">
+        {all.map((p) => (
+          <li>
+            {p.data.caseStudy ? <a href={`/track-record/${p.id}`}>{p.data.name}</a> : p.data.name}
+            {` — ${ledgerMeta(p)} — ${ledgerFigure(p)}`}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>
+
+<style>
+  .pmap-setup {
+    height: clamp(380px, 55vh, 560px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px dashed var(--border-strong);
+    color: var(--foreground-muted);
+  }
+
+  .pmap-setup-title {
+    font-family: var(--theme-font-display);
+    font-variant-ligatures: none;
+    font-size: 21px;
+    font-weight: 400;
+    margin: 0;
+    color: var(--foreground);
+  }
+
+  .pmap-setup-desc {
+    font-size: 13.5px;
+    margin: 0;
+    max-width: 24rem;
+    line-height: 1.6;
+  }
+
+  .pmap-setup-desc code {
+    font-family: var(--theme-font-mono);
+    font-size: 11px;
+    padding: 2px 6px;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+</style>

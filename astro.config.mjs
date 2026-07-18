@@ -26,6 +26,11 @@ export default defineConfig({
     layout: 'constrained',
   },
 
+  redirects: {
+    // Placeholder blog case study superseded by the real one
+    '/blog/sierra-heights-full-cycle': '/track-record/sierra-heights',
+  },
+
   integrations: [
     react(),
     mdx(),

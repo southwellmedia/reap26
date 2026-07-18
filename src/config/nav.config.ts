@@ -14,7 +14,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { label: 'The Firm', href: '/#firm', order: 1 },
   { label: 'Method', href: '/#method', order: 2 },
-  { label: 'Portfolio', href: '/#portfolio', order: 3 },
+  { label: 'Track Record', href: '/track-record', order: 3 },
   { label: 'Team', href: '/#team', order: 4 },
   { label: 'Perspectives', href: '/#perspectives', order: 5 },
 ];

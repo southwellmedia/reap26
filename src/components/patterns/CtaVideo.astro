@@ -1,0 +1,23 @@
+---
+/**
+ * CtaVideo — hero-video background for the "Invest With Us" CTA sections on
+ * the track-record and case-study pages. Same footage as the homepage hero,
+ * under an olive scrim tuned so the motion reads without fighting the copy.
+ * Falls back to the aerial poster (and hides entirely for reduced motion).
+ */
+import heroBg from '@/assets/reap/hero-aerial-olive.webp';
+---
+
+<video
+  class="bgvideo"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="metadata"
+  poster={heroBg.src}
+  aria-hidden="true"
+>
+  <source src="/videos/hero.mp4" type="video/mp4" />
+</video>
+<div class="bgscrim video"></div>
