@@ -1,34 +1,48 @@
 ---
 /**
  * PortfolioSection
- * "Track Record" — data verified against reapcapital.com/track-record.
- * Featured active deal (The Landry) + three full-cycle highlight cards,
- * then the complete property index as a compact thumbnail ledger.
+ * "Track Record" — data verified against reapcapital.com/track-record, with
+ * the actual property photography sourced from the live site.
+ * Featured deal + three full-cycle highlight cards, then the complete
+ * property index as a compact thumbnail ledger.
  */
 import { Image } from 'astro:assets';
 import SectionHead from './SectionHead.astro';
-import apartment from '@/assets/reap/apartment-blue.jpg';
-import towers from '@/assets/reap/towers-dusk.jpg';
-import skyline from '@/assets/reap/dallas-skyline.jpg';
-import aerial from '@/assets/reap/hero-aerial-olive.webp';
+// TODO: replace with actual La Fortuna photography when available —
+// no imagery exists yet for the new acquisition (facts from La Fortuna_Teaser.pdf)
+import laFortuna from '@/assets/reap/apartment-blue.jpg';
+import landry from '@/assets/reap/properties/the-landry.jpg';
+import sierraHeights from '@/assets/reap/properties/sierra-heights.jpg';
+import libertyPark from '@/assets/reap/properties/liberty-park.jpg';
+import hwy380 from '@/assets/reap/properties/hwy-380.jpg';
+import haven from '@/assets/reap/properties/haven-sage.webp';
+import bryant from '@/assets/reap/properties/the-bryant.jpg';
+import charlie from '@/assets/reap/properties/the-charlie.jpg';
+import warren from '@/assets/reap/properties/the-warren.jpg';
+import sutton from '@/assets/reap/properties/sutton.jpg';
+import calvin from '@/assets/reap/properties/the-calvin.jpg';
+import paxton from '@/assets/reap/properties/paxton.jpg';
+import chandler from '@/assets/reap/properties/the-chandler.jpg';
+import mirabel from '@/assets/reap/properties/the-mirabel.jpg';
+import bayshore from '@/assets/reap/properties/bayshore.webp';
 
 const highlights = [
   {
-    image: towers,
-    alt: 'Sierra Heights',
+    image: sierraHeights,
+    alt: 'Sierra Heights, Irving TX',
     meta: 'Full Cycle · Irving, TX',
     name: 'Sierra Heights',
     blurb: '136 units taken full cycle in 25 months — a 37.24% actual IRR and 1.86x equity multiple.',
   },
   {
-    image: skyline,
-    alt: 'Liberty Park',
+    image: libertyPark,
+    alt: 'Liberty Park, Dallas TX',
     meta: 'Full Cycle · Dallas, TX',
     name: 'Liberty Park',
     blurb: '67 units bought direct from the seller as a stabilized high-yield play — 49% actual IRR, 2.05x in 23 months.',
   },
   {
-    image: aerial,
+    image: hwy380,
     alt: 'Hwy 380 Self Storage',
     meta: 'Full Cycle · Texas',
     name: 'Hwy 380 Self Storage',
@@ -37,16 +51,17 @@ const highlights = [
 ];
 
 const index = [
-  { image: apartment, name: 'The Haven', meta: 'San Antonio, TX', figure: 'Active · Target IRR 18–21%' },
-  { image: skyline, name: 'The Bryant', meta: 'Dallas, TX · 322 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: towers, name: 'The Charlie', meta: 'Dallas, TX · 314 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: aerial, name: 'The Warren', meta: 'Dallas, TX · 220 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: apartment, name: 'Sutton on Park Lane', meta: 'Dallas, TX · 196 Units', figure: 'Active · Target IRR 15.6%' },
-  { image: towers, name: 'The Calvin', meta: 'Plano, TX · 167 Units', figure: 'Active · Target IRR 19–21%' },
-  { image: skyline, name: 'Paxton at Lake Highlands', meta: 'Dallas, TX · 1031 Exchange', figure: 'Active · Target IRR 15.8%' },
-  { image: aerial, name: 'The Chandler', meta: 'Dallas–Fort Worth, TX', figure: 'Active · Target IRR 15.31%' },
-  { image: skyline, name: 'The Mirabel', meta: 'Grand Prairie, TX · 86 Units', figure: 'Active · Acquired 2022' },
-  { image: towers, name: 'Beach at Bayshore', meta: 'Tampa, FL · 6 Units', figure: 'Full Cycle · 1.50x Multiple' },
+  { image: landry, name: 'The Landry', meta: 'Arlington, TX · 288 Units', figure: 'Active · Target IRR 21.64%' },
+  { image: haven, name: 'The Haven', meta: 'San Antonio, TX', figure: 'Active · Target IRR 18–21%' },
+  { image: bryant, name: 'The Bryant', meta: 'Dallas, TX · 322 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: charlie, name: 'The Charlie', meta: 'Dallas, TX · 314 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: warren, name: 'The Warren', meta: 'Dallas, TX · 220 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: sutton, name: 'Sutton on Park Lane', meta: 'Dallas, TX · 196 Units', figure: 'Active · Target IRR 15.6%' },
+  { image: calvin, name: 'The Calvin', meta: 'Plano, TX · 167 Units', figure: 'Active · Target IRR 19–21%' },
+  { image: paxton, name: 'Paxton at Lake Highlands', meta: 'Dallas, TX · 1031 Exchange', figure: 'Active · Target IRR 15.8%' },
+  { image: chandler, name: 'The Chandler', meta: 'Dallas–Fort Worth, TX', figure: 'Active · Target IRR 15.31%' },
+  { image: mirabel, name: 'The Mirabel', meta: 'Grand Prairie, TX · 86 Units', figure: 'Active · Acquired 2022' },
+  { image: bayshore, name: 'Beach at Bayshore', meta: 'Tampa, FL · 6 Units', figure: 'Full Cycle · 1.50x Multiple' },
 ];
 ---
 
@@ -58,21 +73,22 @@ const index = [
     </div>
     <div class="feature">
       <div class="feature-img">
-        <Image src={apartment} alt="The Landry, Arlington TX" widths={[720, 1080, 1600]} sizes="(max-width: 1100px) 100vw, 60vw" />
-        <span class="tag">Featured — Active</span>
+        <Image src={laFortuna} alt="La Fortuna, Dallas TX" widths={[720, 1080, 1600]} sizes="(max-width: 1100px) 100vw, 60vw" />
+        <span class="tag">Featured — Newest Acquisition</span>
       </div>
       <div class="feature-body">
-        <span class="meta">Arlington, Texas · Built 1983</span>
-        <h3>The Landry</h3>
+        <span class="meta">Dallas, Texas · North Dallas Submarket</span>
+        <h3>La Fortuna</h3>
         <p>
-          A 288-unit community acquired from a forced seller at a steep discount to comps — an
-          expired rate cap and pending loan maturity created the opening; our balance sheet and
-          lender relationships closed it.
+          A 230-unit infill community on Brookgreen Drive in North Dallas — a high-barrier,
+          supply-constrained submarket — acquired at a basis that compares favorably to
+          replacement cost, with in-place rents trailing renovated comps. A phased unit-turn
+          program closes that gap.
         </p>
         <div class="feature-stats">
-          <div><div class="n">288</div><div class="l">Units</div></div>
-          <div><div class="n">21.64%</div><div class="l">Target IRR</div></div>
-          <div><div class="n">2.45x</div><div class="l">Equity Multiple</div></div>
+          <div><div class="n">230</div><div class="l">Units</div></div>
+          <div><div class="n">75240</div><div class="l">Infill North Dallas</div></div>
+          <div><div class="n">Value-Add</div><div class="l">Strategy</div></div>
         </div>
       </div>
     </div>
