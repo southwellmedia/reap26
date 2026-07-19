@@ -20,7 +20,8 @@ interface Props {
   showSrList?: boolean;
   /** Full-bleed variant — map spans the viewport, chips bar stays on the page grid. */
   fullBleed?: boolean;
-  /** Optional link at the right end of the chips bar (e.g. "View the Full Track Record"). */
+  /** Optional link below the map (e.g. "View the Full Track Record"). Rendered
+   *  outside the island so it survives the consent gate. */
   ctaHref?: string;
   ctaLabel?: string;
   /** Single-property mode (case-study pages) — only this entry's pin, no chips. */
@@ -72,8 +73,6 @@ const mapProperties: MapProperty[] = await Promise.all(
         properties={mapProperties}
         consentEnabled={PUBLIC_CONSENT_ENABLED}
         wide={fullBleed}
-        ctaHref={ctaHref}
-        ctaLabel={ctaLabel}
       />
     ) : (
       <div class="pmap-setup">
@@ -104,6 +103,16 @@ const mapProperties: MapProperty[] = await Promise.all(
   }
 
   {
+    ctaHref && (
+      <div class="pmap-section-cta">
+        <a href={ctaHref}>
+          {ctaLabel} <span aria-hidden="true">⟶</span>
+        </a>
+      </div>
+    )
+  }
+
+  {
     showSrList && (
       <ul class="sr-only">
         {all.map((p) => (
@@ -118,6 +127,26 @@ const mapProperties: MapProperty[] = await Promise.all(
 </div>
 
 <style>
+  .pmap-section-cta {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
+
+  .pmap-section-cta a {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-text, var(--gold-600));
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .pmap-section-cta a:hover {
+    text-decoration: underline;
+  }
+
   .pmap-setup {
     height: clamp(380px, 55vh, 560px);
     display: flex;

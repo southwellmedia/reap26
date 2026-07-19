@@ -122,7 +122,8 @@
   --transition-slow: 300ms;
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Exponential ease-out (quint) — no overshoot; bounces are off-brand */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 
   /* Container */
   --container-max: 1200px;
@@ -609,7 +610,7 @@
 
   /* Toast slide-in */
   .animate-toast-in {
-    animation: toast-in 350ms var(--ease-spring);
+    animation: toast-in 350ms var(--ease-out-quint);
   }
 
   @keyframes toast-in {
@@ -617,7 +618,6 @@
       opacity: 0;
       transform: translateX(100%);
     }
-    60% { transform: translateX(-4px); }
     to {
       opacity: 1;
       transform: translateX(0);

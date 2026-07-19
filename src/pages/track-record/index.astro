@@ -59,7 +59,7 @@ const ledger = [...properties].sort(byStatusThenOrder);
                     : featured.data.location
                 }
               </span>
-              <h3>{featured.data.name}</h3>
+              <h2>{featured.data.name}</h2>
               <p>{featured.data.blurb}</p>
               {featured.data.featureStats && (
                 <div class="feature-stats">
@@ -101,7 +101,7 @@ const ledger = [...properties].sort(byStatusThenOrder);
                 </div>
                 <div class="bd">
                   <span class="meta">{prop.data.status === 'active' ? 'Active' : 'Full Cycle'} · {prop.data.location}</span>
-                  <h4>{prop.data.name}</h4>
+                  <h3>{prop.data.name}</h3>
                   <p class="blurb">{prop.data.blurb}</p>
                   <span class="more">Read the Case Study <span aria-hidden="true">⟶</span></span>
                 </div>
@@ -113,7 +113,7 @@ const ledger = [...properties].sort(byStatusThenOrder);
                 </div>
                 <div class="bd">
                   <span class="meta">{prop.data.status === 'active' ? 'Active' : 'Full Cycle'} · {prop.data.location}</span>
-                  <h4>{prop.data.name}</h4>
+                  <h3>{prop.data.name}</h3>
                   <p class="blurb">{prop.data.blurb}</p>
                 </div>
               </div>

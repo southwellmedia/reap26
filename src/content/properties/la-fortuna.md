@@ -30,10 +30,8 @@ indexFigure: Active · Newest Acquisition
 featureStats:
   - n: '230'
     l: Units
-  - n: '75240'
-    l: Infill North Dallas
-  - n: Value-Add
-    l: Strategy
+  - n: '21st'
+    l: Transaction Since 2018
 ---
 
 ## The thesis

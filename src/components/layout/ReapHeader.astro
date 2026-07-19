@@ -31,3 +31,9 @@ const navItems = getNavItems();
     <a href="/invest" class="btn gold">Invest With Us</a>
   </nav>
 </header>
+<script is:inline>
+  // Solid state before first paint — the scroll listener in HomeLayout only
+  // runs after hydration, which flashed white-on-white on anchor jumps and
+  // mid-page loads over light sections.
+  if (window.scrollY > 60) document.querySelector('.reap-nav')?.classList.add('solid');
+</script>

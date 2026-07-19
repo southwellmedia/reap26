@@ -11,11 +11,12 @@ export interface NavItem {
   order: number;
 }
 
+// Labels match the section eyebrows 1:1 so nav and page never disagree.
 export const navItems: NavItem[] = [
   { label: 'The Firm', href: '/#firm', order: 1 },
-  { label: 'Method', href: '/#method', order: 2 },
+  { label: 'The Method', href: '/#method', order: 2 },
   { label: 'Track Record', href: '/track-record', order: 3 },
-  { label: 'Team', href: '/#team', order: 4 },
+  { label: 'The Team', href: '/#team', order: 4 },
   { label: 'Perspectives', href: '/#perspectives', order: 5 },
 ];
 

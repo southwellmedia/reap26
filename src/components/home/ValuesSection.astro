@@ -1,17 +1,27 @@
 ---
 /**
  * ValuesSection
- * "Why We Do It" — the five core values from reapcapital.com/about,
- * as a hairline-ruled grid mirroring the dark panel's cols treatment.
+ * "Why We Do It" — three core values (distilled from the five on
+ * reapcapital.com/about), each tied to operating proof rather than
+ * standing as a bare adjective. Hairline-ruled grid mirroring the
+ * dark panel's cols treatment.
  */
 import SectionHead from './SectionHead.astro';
+import { firmStats } from '@/config/stats.config';
 
 const values = [
-  { name: 'Integrity', body: 'We stand by our morals and values even in the most difficult situations.' },
-  { name: 'Tenacity', body: 'We approach every challenge with unwavering determination and believe that every problem has a solution.' },
-  { name: 'Excellence', body: 'We strive to achieve the highest standards of professionalism and performance.' },
-  { name: 'Loyalty', body: 'We are committed and dedicated to our investors, our colleagues, and our firm.' },
-  { name: 'Discipline', body: 'We adhere to our processes and strategy when making investment decisions.' },
+  {
+    name: 'Discipline',
+    body: `We adhere to our processes and strategy when making investment decisions — the same underwriting on all ${firmStats.transactions} transactions since ${firmStats.transactionsSinceYear}.`,
+  },
+  {
+    name: 'Integrity',
+    body: 'We stand by our morals and values even in the most difficult situations. The track record on this site is reported the way it landed — closed deals, not projections.',
+  },
+  {
+    name: 'Loyalty',
+    body: 'We are committed and dedicated to our investors, our colleagues, and our firm. Every member of this team has capital invested alongside yours.',
+  },
 ];
 ---
 

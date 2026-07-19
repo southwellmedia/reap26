@@ -1,11 +1,10 @@
 ---
 /**
  * HomeHero
- * Full-bleed hero: drifting aerial photo, olive scrim, watermark, staggered
- * load-in, and the count-up stat ticker.
+ * Full-bleed hero: background video over the aerial poster, olive scrim,
+ * staggered load-in, and the stat ticker.
  */
 import heroBg from '@/assets/reap/hero-aerial-olive.webp';
-import watermark from '@/assets/reap/reap-watermark.svg';
 import { firmStats } from '@/config/stats.config';
 ---
 
@@ -20,18 +19,18 @@ import { firmStats } from '@/config/stats.config';
     poster={heroBg.src}
     aria-hidden="true"
   >
-    <source src="/videos/hero.mp4" type="video/mp4" />
+    <!-- poster-only on phones — the footage isn't worth cellular bytes under the scrim -->
+    <source src="/videos/hero.mp4" type="video/mp4" media="(min-width: 761px)" />
   </video>
   <div class="hero-scrim"></div>
-  <img class="hero-mark" src={watermark.src} alt="" />
   <div class="wrap hero-in">
     <div class="kicker hload">
       <span class="eyebrow on-dark">Real Estate • Private Equity • Investing</span>
     </div>
-    <h1 class="display hload h2">
+    <h1 class="display hload hload-2">
       Creating generational wealth through<br /><em class="gold">passive investments</em>
     </h1>
-    <div class="hero-row hload h3">
+    <div class="hero-row hload hload-3">
       <p>
         Reap Capital is an IRR-driven, vertically integrated, value-add operator. We purchase
         underperforming assets and increase their revenue by renovating, upgrading, repositioning,
@@ -39,11 +38,11 @@ import { firmStats } from '@/config/stats.config';
       </p>
       <div class="hero-ctas">
         <a class="btn gold" href="/invest">Invest With Us <span aria-hidden="true">⟶</span></a>
-        <a class="btn ghost" href="#portfolio">View Track Record</a>
+        <a class="btn ghost" href="/track-record">View Track Record</a>
       </div>
     </div>
   </div>
-  <div class="ticker hload h4">
+  <div class="ticker hload hload-4">
     <div>
       <div class="n">{firmStats.avgIrr}</div>
       <div class="l">Average Realized IRR Since Inception</div>

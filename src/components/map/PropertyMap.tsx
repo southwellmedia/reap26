@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { importLibrary, setOptions } from '@googlemaps/js-api-loader';
+import logomark from '@/assets/reap/reap-logomark-gold.svg';
 import { MAP_OPTIONS, darkMapStyles, lightMapStyles } from './mapStyles';
 import './PropertyMap.css';
 
@@ -44,9 +45,6 @@ interface Props {
   externalUrl?: string;
   /** Full-bleed variant — frame spans the viewport, bar stays on the page grid. */
   wide?: boolean;
-  /** Optional link rendered at the right end of the chips bar. */
-  ctaHref?: string;
-  ctaLabel?: string;
 }
 
 interface ConsentWindow extends Window {
@@ -101,8 +99,6 @@ export default function PropertyMap({
   consentCategory = 'marketing',
   externalUrl = 'https://www.google.com/maps/search/?api=1&query=Dallas%2C+TX',
   wide = false,
-  ctaHref,
-  ctaLabel,
 }: Props) {
   const [granted, setGranted] = useState(false);
   const [forceLoad, setForceLoad] = useState(false);
@@ -258,23 +254,19 @@ export default function PropertyMap({
   if (!granted && !forceLoad) {
     return (
       <div className="pmap-placeholder">
-        <svg
+        <img
           className="pmap-placeholder-icon"
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          src={logomark.src}
+          width="36"
+          height="36"
+          alt=""
           aria-hidden="true"
-        >
-          <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-          <circle cx="12" cy="10" r="3" />
-        </svg>
+        />
         <p className="pmap-placeholder-title">Portfolio Map</p>
-        <p className="pmap-placeholder-desc">Accept cookies to load the interactive map.</p>
+        <p className="pmap-placeholder-desc">
+          We serve the portfolio map through Google Maps, which sets Google cookies. Load it when
+          you're ready.
+        </p>
         <button type="button" className="pmap-placeholder-btn" onClick={() => setForceLoad(true)}>
           Load Map
         </button>
@@ -308,28 +300,21 @@ export default function PropertyMap({
   const single = properties.length === 1;
   return (
     <div className={wide ? 'pmap pmap-wide' : 'pmap'}>
-      {(!single || ctaHref) && (
+      {!single && (
         <div className="pmap-bar">
-          {!single && (
-            <div className="pmap-chips" role="group" aria-label="Map regions">
-              {REGION_CHIPS.map((chip) => (
-                <button
-                  key={chip.key}
-                  type="button"
-                  className="pmap-chip"
-                  aria-pressed={activeChip === chip.key}
-                  onClick={() => onChip(chip.key)}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {ctaHref && (
-            <a className="pmap-cta" href={ctaHref}>
-              {ctaLabel} <span aria-hidden="true">⟶</span>
-            </a>
-          )}
+          <div className="pmap-chips" role="group" aria-label="Map regions">
+            {REGION_CHIPS.map((chip) => (
+              <button
+                key={chip.key}
+                type="button"
+                className="pmap-chip"
+                aria-pressed={activeChip === chip.key}
+                onClick={() => onChip(chip.key)}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
       <div className="pmap-frame">
