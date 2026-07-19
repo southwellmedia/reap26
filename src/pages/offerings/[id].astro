@@ -30,6 +30,7 @@ import {
   locationLabel,
   toEmbedUrl,
   DEALROOM_BASE_URL,
+  INVESTOR_PORTAL_URL,
 } from '@/lib/dealroom';
 
 export const prerender = false;
@@ -264,7 +265,7 @@ const pct = progress.percentOfTarget;
                   </li>
                 </ol>
                 <p class="interest-lede">
-                  Already invited? <a class="portal-link" href="https://lucid.madstack.io">Open the investor portal</a> —
+                  Already invited? <a class="portal-link" href={INVESTOR_PORTAL_URL}>Open the investor portal</a> —
                   or email <a class="portal-link" href="mailto:info@reapcap.com">info@reapcap.com</a> with questions.
                 </p>
               </>

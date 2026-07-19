@@ -86,6 +86,13 @@ export interface Teaser {
 
 export const DEALROOM_BASE_URL = DEALROOM_API_URL;
 
+/**
+ * Reap Capital's white-label investor portal — the verified portal domain
+ * configured in LucidOS (fundraising_portal_domains). Documents, detailed
+ * financials, and soft commitments live here, behind invitation.
+ */
+export const INVESTOR_PORTAL_URL = 'https://invest.reapcap.com';
+
 const configured = Boolean(DEALROOM_API_KEY);
 
 async function dealroom<T>(path: string): Promise<T> {
