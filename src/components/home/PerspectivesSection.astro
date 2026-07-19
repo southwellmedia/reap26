@@ -26,16 +26,23 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
     <div style="margin-top:56px">
       {
         posts.length > 0 ? (
-          posts.map((post) => (
-            <a class="article" href={`/blog/${post.id}`}>
-              <span class="cat">{post.data.tags?.[0] ?? 'Field Notes'}</span>
-              <h3>{post.data.title}</h3>
-              <span class="date">
-                {post.data.publishedAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              </span>
-              <span class="arr">⟶</span>
-            </a>
-          ))
+          <>
+            {posts.map((post) => (
+              <a class="article" href={`/blog/${post.id}`}>
+                <span class="cat">{post.data.tags?.[0] ?? 'Field Notes'}</span>
+                <h3>{post.data.title}</h3>
+                <span class="date">
+                  {post.data.publishedAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}
+                </span>
+                <span class="arr">⟶</span>
+              </a>
+            ))}
+            <div class="port-cta">
+              <a class="btn line" href="/blog">
+                All Perspectives <span aria-hidden="true">⟶</span>
+              </a>
+            </div>
+          </>
         ) : (
           <div class="perspectives-note">
             <p>

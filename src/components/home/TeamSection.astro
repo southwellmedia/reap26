@@ -6,6 +6,7 @@
 import { Image } from 'astro:assets';
 import SectionHead from './SectionHead.astro';
 import watermark from '@/assets/reap/reap-watermark.svg';
+import eagleGlyph from '@/assets/reap/reap-eagle-glyph.svg';
 import davidLilley from '@/assets/reap/team/david-lilley.jpg';
 import kimberlyBarnes from '@/assets/reap/team/kimberly-barnes.jpg';
 import milesMinnis from '@/assets/reap/team/miles-minnis.jpg';
@@ -58,6 +59,7 @@ const people = [
           <div class="person">
             <div class="ph">
               <Image src={person.photo} alt={person.name} widths={[420, 640]} sizes="(max-width: 760px) 100vw, 33vw" />
+              <span class="mark" aria-hidden="true" style={`--eagle: url('${eagleGlyph.src}')`}></span>
             </div>
             <div class="bd">
               <h4>{person.name}</h4>

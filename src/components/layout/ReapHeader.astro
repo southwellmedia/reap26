@@ -8,10 +8,25 @@
 import { getNavItems } from '@/config/nav.config';
 import logomark from '@/assets/reap/reap-logomark-gold.svg';
 
+interface Props {
+  /** 'dark' (default) is transparent over olive heroes; 'light' is the
+   *  white-paper chrome for reading pages (Perspectives). */
+  variant?: 'dark' | 'light';
+}
+
+const { variant = 'dark' } = Astro.props;
 const navItems = getNavItems();
+
+// Current-page marker for path-based nav items (anchor links never match).
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => {
+  if (href.startsWith('/#') || href === '/') return false;
+  const path = href.replace(/\/$/, '');
+  return currentPath === path || currentPath.startsWith(`${path}/`);
+};
 ---
 
-<header class="reap-nav">
+<header class:list={['reap-nav', { light: variant === 'light' }]}>
   <div class="nav-in">
     <a class="brand" href="/#top">
       <img class="brand-mark" src={logomark.src} width="44" height="44" alt="" />
@@ -21,13 +36,21 @@ const navItems = getNavItems();
       </span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+      {navItems.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
       <a href="/invest" class="btn">Invest With Us</a>
     </nav>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="reap-menu">Menu</button>
   </div>
   <nav class="nav-menu" id="reap-menu" aria-label="Primary" hidden>
-    {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+    {navItems.map((item) => (
+      <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+        {item.label}
+      </a>
+    ))}
     <a href="/invest" class="btn gold">Invest With Us</a>
   </nav>
 </header>

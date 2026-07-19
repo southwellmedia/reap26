@@ -1,61 +1,112 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
+/**
+ * Perspectives index (/blog)
+ * White-paper editorial page on the brand chrome: light ReapHeader, featured
+ * entry as the homepage .feature (photo + olive body), remaining posts as
+ * .article ledger rows. Named "Perspectives" to match the rest of the site.
+ */
+import { Image } from 'astro:assets';
+import HomeLayout from '@/layouts/HomeLayout.astro';
 import { getCollection } from 'astro:content';
 
-const posts = await getCollection('blog', ({ data }) => !data.draft);
-const sortedPosts = posts.sort(
-  (a, b) => new Date(b.data.publishedAt).getTime() - new Date(a.data.publishedAt).getTime()
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
 );
+
+const [featured, ...rest] = posts;
+
+// Frontmatter dates are UTC midnights — format in UTC so the day never slips.
+const fullDate = (date: Date) =>
+  date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 ---
 
-<PageLayout
-  title="Blog"
-  description="Read our latest articles and updates."
+<HomeLayout
+  title="Perspectives"
+  description="Plain-spoken analysis from the operators actually doing the deals — underwriting, operations, and the Dallas–Fort Worth market."
+  navVariant="light"
 >
-  <section class="py-16 md:py-24">
-    <div class="container mx-auto px-4">
-      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl mb-8">Blog</h1>
-
-      {sortedPosts.length === 0 ? (
-        <div class="text-center py-12">
-          <p class="text-muted-foreground">
-            Perspectives — plain-spoken analysis from the operators doing the deals — publishes
-            here soon.
-          </p>
-          <a href="mailto:info@reapcap.com?subject=Field%20Notes" class="mt-4 inline-block underline underline-offset-4">
-            Ask us directly in the meantime
-          </a>
-        </div>
-      ) : (
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {sortedPosts.map((post) => (
-            <article class="group">
-              <a href={`/blog/${post.id}`} class="block">
-                {post.data.image && (
-                  <img
-                    src={post.data.image.src}
-                    alt={post.data.title}
-                    class="aspect-video w-full rounded-lg object-cover mb-4"
-                  />
-                )}
-                <h2 class="text-xl font-semibold group-hover:text-primary transition-colors">
-                  {post.data.title}
-                </h2>
-                <p class="mt-2 text-muted-foreground line-clamp-2">
-                  {post.data.description}
-                </p>
-                <time class="mt-2 text-sm text-muted-foreground block">
-                  {new Date(post.data.publishedAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </time>
-              </a>
-            </article>
-          ))}
-        </div>
-      )}
+  <section class="pers-hero">
+    <div class="wrap">
+      <span class="eyebrow">Perspectives</span>
+      <h1 class="display" style="margin-top:22px">The voice of <em>value-add.</em></h1>
+      <div class="split split-end" style="margin-top:26px">
+        <p class="side-note">
+          Plain-spoken analysis from the operators actually doing the deals — no gurus, no secrets
+          for sale.
+        </p>
+      </div>
     </div>
   </section>
-</PageLayout>
+
+  <section class="pers-index">
+    <div class="wrap">
+      {
+        posts.length === 0 ? (
+          <div class="perspectives-note">
+            <p>
+              Field Notes — our written analysis on underwriting, operations, and the Dallas–Fort
+              Worth market — publishes here soon. Until then, the operators are reachable the
+              old-fashioned way.
+            </p>
+            <a class="btn line" href="mailto:info@reapcap.com?subject=Field%20Notes">
+              Ask Us Directly <span aria-hidden="true">⟶</span>
+            </a>
+          </div>
+        ) : (
+          <>
+            {featured && (
+              <a
+                class:list={['feature', { 'no-img': !featured.data.image }]}
+                href={`/blog/${featured.id}`}
+              >
+                {featured.data.image && (
+                  <div class="feature-img">
+                    <Image
+                      src={featured.data.image}
+                      alt={featured.data.imageAlt || ''}
+                      widths={[640, 960, 1280]}
+                      sizes="(max-width: 1100px) 100vw, 58vw"
+                      loading="eager"
+                    />
+                    <span class="tag">{featured.data.tags?.[0] ?? 'Field Notes'}</span>
+                  </div>
+                )}
+                <div class="feature-body">
+                  <span class="meta">Latest · {fullDate(featured.data.publishedAt)}</span>
+                  <h2>{featured.data.title}</h2>
+                  <p>{featured.data.description}</p>
+                  <span class="more">
+                    Read the Analysis <span class="row-arrow" aria-hidden="true">⟶</span>
+                  </span>
+                </div>
+              </a>
+            )}
+
+            {rest.length > 0 && (
+              <div style="margin-top:72px">
+                <div class="sec-head">
+                  <span class="eyebrow">The Ledger</span>
+                </div>
+                <div style="margin-top:40px">
+                  {rest.map((post) => (
+                    <a class="article" href={`/blog/${post.id}`}>
+                      <span class="cat">{post.data.tags?.[0] ?? 'Field Notes'}</span>
+                      <h3>{post.data.title}</h3>
+                      <span class="date">{fullDate(post.data.publishedAt)}</span>
+                      <span class="arr" aria-hidden="true">⟶</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )
+      }
+    </div>
+  </section>
+</HomeLayout>

@@ -7,6 +7,14 @@
 import towers from '@/assets/reap/towers-dusk.jpg';
 import watermark from '@/assets/reap/reap-watermark.svg';
 import { firmStats, PERFORMANCE_DISCLOSURE } from '@/config/stats.config';
+
+interface Props {
+  /** Where "Read Our Perspectives" points — the homepage anchor by default;
+   *  pages outside the homepage pass /blog so the link never dead-ends. */
+  perspectivesHref?: string;
+}
+
+const { perspectivesHref = '#perspectives' } = Astro.props;
 ---
 
 <section class="cta" id="invest" style={`--cta-photo: url('${towers.src}')`}>
@@ -24,7 +32,7 @@ import { firmStats, PERFORMANCE_DISCLOSURE } from '@/config/stats.config';
     </p>
     <div class="cta-actions">
       <a class="btn gold" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
-      <a class="btn ghost" href="#perspectives">Read Our Perspectives</a>
+      <a class="btn ghost" href={perspectivesHref}>Read Our Perspectives</a>
     </div>
     <p class="disclosure">{PERFORMANCE_DISCLOSURE}</p>
   </div>

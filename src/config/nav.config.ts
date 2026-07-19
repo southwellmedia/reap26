@@ -17,7 +17,7 @@ export const navItems: NavItem[] = [
   { label: 'The Method', href: '/#method', order: 2 },
   { label: 'Track Record', href: '/track-record', order: 3 },
   { label: 'The Team', href: '/#team', order: 4 },
-  { label: 'Perspectives', href: '/#perspectives', order: 5 },
+  { label: 'Perspectives', href: '/blog', order: 5 },
 ];
 
 /**
