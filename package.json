@@ -34,6 +34,7 @@
     "@astrojs/mdx": "5.0.0",
     "@astrojs/react": "5.0.0",
     "@astrojs/sitemap": "^3.7.1",
+    "@astrojs/vercel": "^11.0.3",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/manrope": "^5.2.8",
     "@fontsource-variable/montserrat": "^5.2.8",

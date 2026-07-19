@@ -240,12 +240,17 @@ bodies are `{ "error": "…" }`.
   `DEALROOM_API_KEY` are declared in `astro.config.mjs` (server-side; the
   key is a secret) and read via `astro:env/server`.
 - **Pages**: `/offerings` (index, from `GET /v1/raises`) and
-  `/offerings/[id]` (teaser detail, from `GET /v1/raises/{id}`), both
-  statically built — data is fetched at **build time**. Funding progress
-  therefore goes stale between deploys; rebuild on a schedule (or via a
-  deploy hook) while a raise is actively funding.
-- **Missing key / API failure**: the build does NOT fail — pages fall back
-  to the empty "no current offerings" state and a warning is logged.
+  `/offerings/[id]` (teaser detail, from `GET /v1/raises/{id}`). Both are
+  **server-rendered** (`prerender = false`; the site uses the Vercel adapter
+  with everything else prerendered) with a 60s CDN cache
+  (`CDN-Cache-Control: s-maxage=60, stale-while-revalidate=300`), so sponsor
+  edits and funding progress appear within a minute or two — no rebuild
+  needed. A hidden/closed raise 404s to the site's 404 page.
+- **Missing key / API failure**: `/offerings` never 500s — it falls back to
+  the empty "no current offerings" state and logs a warning. The detail page
+  404s when the raise is gone and only errors on genuine API failures.
+- **Deploy note**: `DEALROOM_API_KEY` must be set in the Vercel project's
+  environment variables (it is a runtime secret now, not just build-time).
 - **Interest form**: `src/components/patterns/DealRoomInterestForm.astro`,
   posts from the browser straight to LucidOS (no key). If the sponsor later
   enables reCAPTCHA in LucidOS, submissions will start failing with 400 —

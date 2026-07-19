@@ -2,18 +2,17 @@
 /**
  * Deal room teaser — /offerings/[id]
  * One page per publicly visible LucidOS raise (see LUCID-DEALROOM.md),
- * statically built from GET /v1/raises/{id}. The payload is teaser-tier by
- * design — no documents, financials, or street address — so everything here
- * is marketing content plus the interest form, which posts straight to
- * LucidOS from the browser. Raises that disappear between builds simply
- * stop being generated (getStaticPaths drops them).
+ * server-rendered from GET /v1/raises/{id} with a 60s CDN cache. The payload
+ * is teaser-tier by design — no documents, financials, or street address —
+ * so everything here is marketing content plus the interest form, which
+ * posts straight to LucidOS from the browser. A raise the sponsor hides (or
+ * that closes and disappears) 404s per the vendor guide, never errors.
  */
 import { marked } from 'marked';
 import SubpageLayout from '@/layouts/SubpageLayout.astro';
 import SectionHead from '@/components/home/SectionHead.astro';
 import DealRoomInterestForm from '@/components/patterns/DealRoomInterestForm.astro';
 import {
-  listPublicRaises,
   getTeaser,
   formatMoney,
   formatPercent,
@@ -25,15 +24,16 @@ import {
   DEALROOM_BASE_URL,
 } from '@/lib/dealroom';
 
-export async function getStaticPaths() {
-  const raises = await listPublicRaises();
-  const teasers = await Promise.all(raises.map((raise) => getTeaser(raise.id)));
-  return teasers
-    .filter((teaser) => teaser !== null)
-    .map((teaser) => ({ params: { id: teaser.raise.id }, props: { teaser } }));
-}
+export const prerender = false;
 
-const { teaser } = Astro.props;
+const { id } = Astro.params;
+// Raise IDs are UUIDs — anything else can skip the API round-trip
+const teaser = id && /^[0-9a-f-]{36}$/i.test(id) ? await getTeaser(id) : null;
+if (!teaser) return Astro.rewrite('/offerings/unavailable');
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+
 const { raise, deal, dealRoom, metrics, progress, interest } = teaser;
 
 const isClosed = raise.status === 'closed';

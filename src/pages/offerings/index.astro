@@ -2,10 +2,10 @@
 /**
  * Current Offerings — /offerings
  * Index of every publicly visible LucidOS raise (see LUCID-DEALROOM.md).
- * Fetched at BUILD time from the deal-room API; when no raise is public (or
- * the API key isn't configured) the page renders its empty state and points
- * visitors at /invest instead. Rebuild on a schedule while a raise is open —
- * funding progress and visibility change between deploys.
+ * Server-rendered on each request so raise visibility and funding progress
+ * stay fresh; the CDN caches for 60s (mirroring LucidOS's own edge cache).
+ * When no raise is public (or the API key isn't configured) the page renders
+ * its empty state and points visitors at /invest instead.
  */
 import SubpageLayout from '@/layouts/SubpageLayout.astro';
 import SectionHead from '@/components/home/SectionHead.astro';
@@ -13,6 +13,11 @@ import CtaVideo from '@/components/patterns/CtaVideo.astro';
 import { listPublicRaises, formatMoney, locationLabel } from '@/lib/dealroom';
 import { firmStats } from '@/config/stats.config';
 import logomark from '@/assets/reap/reap-logomark-gold.svg';
+
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
 
 const raises = await listPublicRaises();
 // Active raises lead; fully subscribed ones stay visible as social proof

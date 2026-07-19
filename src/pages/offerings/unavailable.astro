@@ -1,0 +1,34 @@
+---
+/**
+ * Offering no longer available — rewrite target for /offerings/[id] when a
+ * raise is hidden, closed out of visibility, or the id is unknown (the
+ * vendor guide says to show a "no longer available" state, never an error).
+ * On-demand because the prerendered 404 page can't be rewritten to from an
+ * on-demand route; serves a real 404 status for crawlers.
+ */
+import SubpageLayout from '@/layouts/SubpageLayout.astro';
+
+export const prerender = false;
+
+Astro.response.status = 404;
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=60');
+---
+
+<SubpageLayout
+  title="Offering No Longer Available"
+  description="This offering is no longer available. See Reap Capital's current offerings or request access to hear about the next one first."
+  eyebrow="Current Offerings"
+  lede="Offerings come down when they close or fully subscribe. What's open right now is always on the offerings page — and requesting access puts the next deal in your inbox before it gets here."
+>
+  <Fragment slot="heading">That offering is <em>no longer available.</em></Fragment>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="cta-actions" style="justify-content:flex-start">
+        <a class="btn line" href="/offerings">Current Offerings <span aria-hidden="true">⟶</span></a>
+        <a class="btn line" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
+      </div>
+    </div>
+  </section>
+</SubpageLayout>

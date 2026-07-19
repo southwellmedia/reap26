@@ -2,10 +2,16 @@ import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
+import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: process.env.SITE_URL || 'https://reapcapital.com',
+
+  // Static-first with per-page opt-out: marketing pages stay prerendered;
+  // /offerings/* and the form API routes set `prerender = false` so raise
+  // data (funding progress, visibility) is fresh on every request.
+  adapter: vercel(),
 
   env: {
     schema: {
