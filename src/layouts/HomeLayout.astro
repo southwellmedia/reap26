@@ -17,6 +17,8 @@ interface Props {
   imageAlt?: string;
   /** Nav chrome: 'dark' over olive heroes (default), 'light' for reading pages. */
   navVariant?: 'dark' | 'light';
+  /** Keep the page out of search indexes (gated pages, e.g. /offerings). */
+  noindex?: boolean;
   /** Passed through to BaseLayout for article OG/schema markup (blog posts). */
   article?: {
     publishedTime: Date;
@@ -26,10 +28,10 @@ interface Props {
   };
 }
 
-const { title, description, image, imageAlt, navVariant = 'dark', article } = Astro.props;
+const { title, description, image, imageAlt, navVariant = 'dark', noindex, article } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} image={image} imageAlt={imageAlt} article={article} includeOrgSchema={true}>
+<BaseLayout title={title} description={description} image={image} imageAlt={imageAlt} noindex={noindex} article={article} includeOrgSchema={true}>
   <ReapHeader slot="header" variant={navVariant} />
 
   <div class="reap-home">

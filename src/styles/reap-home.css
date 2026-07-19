@@ -89,7 +89,9 @@
 .reap-nav .brand-name { font-family: 'Playfair Display SC', Georgia, serif; font-size: 26px; line-height: 1; letter-spacing: 0.06em; color: #fff; }
 .reap-nav .brand-tag { font-size: 9.5px; font-weight: 600; line-height: 1; letter-spacing: 0.32em; color: var(--gold-400); }
 .reap-nav .nav-links { margin-left: auto; display: flex; align-items: center; gap: 38px; }
-.reap-nav .nav-links a { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.88); text-decoration: none; padding-bottom: 5px; border-bottom: 1px solid transparent; transition: color 0.25s ease, border-color 0.25s ease; }
+/* nowrap: a label must never break mid-word — if the row runs out of room,
+   drop the hamburger breakpoint instead of letting items wrap */
+.reap-nav .nav-links a { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.88); text-decoration: none; padding-bottom: 5px; border-bottom: 1px solid transparent; transition: color 0.25s ease, border-color 0.25s ease; white-space: nowrap; }
 .reap-nav .nav-links a:hover { color: var(--gold-400); border-color: var(--gold-400); text-decoration: none; }
 .reap-nav .nav-links a[aria-current='page'] { color: var(--gold-400); border-color: var(--gold-400); }
 .reap-nav .nav-menu a[aria-current='page'] { color: var(--gold-400); }
@@ -484,12 +486,78 @@ html.js-rvl .reap-home .sec-head.rvl.rvl-in::after { transform: scaleX(1); }
 .reap-home .deal-video { margin-top: 44px; aspect-ratio: 16 / 9; background: var(--green-950); }
 .reap-home .deal-video iframe { width: 100%; height: 100%; border: 0; display: block; }
 
-/* interest / fully-subscribed section + offerings empty state */
-.reap-home .interest-block { max-width: 720px; margin-top: 48px; display: flex; flex-direction: column; gap: 24px; }
+/* interest lede + offerings empty state */
 .reap-home .interest-lede { margin: 0; font-size: 16.5px; line-height: 1.8; color: rgba(0, 0, 0, 0.62); max-width: 58ch; }
 .reap-home .invest-form label .opt { text-transform: none; letter-spacing: 0.04em; font-weight: 500; color: var(--text-muted); }
 .reap-home .offerings-empty { margin-top: 48px; display: flex; flex-direction: column; gap: 24px; max-width: 720px; }
 .reap-home .offerings-empty p { margin: 0; font-size: 16.5px; line-height: 1.8; color: rgba(0, 0, 0, 0.62); max-width: 58ch; }
+
+/* deal room — standalone split-view (/offerings/[id]), same grammar as the
+   invest page: sticky olive identity panel left, light reading column right */
+.reap-home.dealroom-page { display: grid; grid-template-columns: 9fr 11fr; min-height: 100vh; background: #fff; }
+.reap-home .dealroom-side { position: relative; overflow: hidden; background: var(--green-950); color: #fff; }
+.reap-home .dealroom-side .photo { position: absolute; inset: 0; background-image: var(--dealroom-photo); background-size: cover; background-position: center; }
+.reap-home .dealroom-side .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(37, 44, 33, 0.9) 0%, rgba(57, 67, 52, 0.88) 55%, rgba(37, 44, 33, 0.97) 100%); }
+.reap-home .dealroom-side .watermark { position: absolute; right: -90px; bottom: -140px; height: 540px; pointer-events: none; }
+.reap-home .dealroom-side-in { position: sticky; top: 0; height: 100vh; min-height: 720px; display: flex; flex-direction: column; justify-content: space-between; gap: 36px; padding: 44px 56px 52px; }
+.reap-home .dealroom-id { position: relative; display: flex; flex-direction: column; gap: 18px; }
+.reap-home .dealroom-id h1 { font-size: clamp(34px, 3.2vw, 54px); color: #fff; }
+.reap-home .dealroom-headline { margin: 0; font-size: 15px; line-height: 1.7; color: var(--text-on-dark-muted); max-width: 46ch; }
+.reap-home .dealroom-side-foot { position: relative; display: flex; flex-direction: column; gap: 26px; align-items: flex-start; }
+.reap-home .dealroom-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border-on-dark); border: 1px solid var(--border-on-dark); align-self: stretch; }
+.reap-home .dealroom-metrics > div { background: rgba(37, 44, 33, 0.82); padding: 20px 22px; }
+.reap-home .dealroom-metrics .n { font-family: var(--font-display); font-size: 29px; line-height: 1; color: var(--gold-400); font-variant-numeric: tabular-nums lining-nums; }
+.reap-home .dealroom-metrics .l { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); margin-top: 8px; }
+.reap-home .dealroom-side .raise-progress { align-self: stretch; margin-top: 0; }
+.reap-home .dealroom-terms { margin: 0; align-self: stretch; }
+.reap-home .dealroom-terms .row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 11px 0; border-top: 1px solid var(--border-on-dark); }
+.reap-home .dealroom-terms dt { font-size: 10.5px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+.reap-home .dealroom-terms dd { margin: 0; font-size: 14px; font-weight: 600; color: #fff; text-align: right; }
+.reap-home .dealroom-main { display: flex; }
+.reap-home .dealroom-main-in { width: 100%; max-width: 780px; margin: 0 auto; padding: clamp(56px, 9vh, 110px) clamp(28px, 4.5vw, 80px); display: flex; flex-direction: column; gap: 64px; }
+.reap-home .dealroom-head { display: flex; flex-direction: column; gap: 16px; }
+.reap-home .dealroom-profile { display: flex; flex-direction: column; gap: 10px; }
+.reap-home .dealroom-profile dl { margin: 6px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px; }
+.reap-home .dealroom-profile .row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 13px 0; border-top: 1px solid var(--reap-hairline); }
+.reap-home .dealroom-profile dt { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
+.reap-home .dealroom-profile dd { margin: 0; font-size: 14px; font-weight: 600; color: var(--green-950); text-align: right; }
+.reap-home .dealroom-interest-block { display: flex; flex-direction: column; gap: 20px; scroll-margin-top: 48px; border-top: 1px solid var(--reap-hairline); padding-top: 56px; }
+
+@media (max-width: 1024px) {
+  .reap-home.dealroom-page { grid-template-columns: 1fr; }
+  .reap-home .dealroom-side-in { position: static; height: auto; min-height: 0; padding: 36px 24px 48px; gap: 36px; }
+  .reap-home .dealroom-main-in { padding: 48px 24px 56px; gap: 48px; }
+  .reap-home .dealroom-profile dl { grid-template-columns: 1fr; gap: 0; }
+}
+
+/* offerings gate — self-certification interstitial over the gated pages.
+   Server-rendered visible (fails closed without JS); the inline script
+   removes it pre-paint for visitors with a standing acknowledgment. */
+html.gate-locked { overflow: hidden; }
+.reap-home .offerings-gate { position: fixed; inset: 0; z-index: 120; background: rgba(37, 44, 33, 0.96); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 24px; overflow-y: auto; }
+.reap-home .gate-panel { max-width: 680px; background: var(--green-900); border-top: 3px solid var(--gold-400); box-shadow: var(--shadow-pop); padding: clamp(32px, 5vw, 56px); display: flex; flex-direction: column; align-items: flex-start; gap: 20px; margin: auto; }
+.reap-home .gate-form { max-width: none; align-self: stretch; margin-top: 4px; }
+.reap-home .gate-mark { width: 52px; height: 52px; }
+.reap-home .gate-panel .display { color: #fff; font-size: clamp(28px, 3.4vw, 42px); }
+.reap-home .gate-panel p { margin: 0; font-size: 15px; line-height: 1.75; color: var(--text-on-dark-muted); }
+.reap-home .gate-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+.reap-home .gate-fine { font-size: 12px; line-height: 1.6; color: rgba(255, 255, 255, 0.5); }
+.reap-home .offerings-gate.gate-out { opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+/* homepage offer modal — same chrome as the gate, but dismissible and it
+   announces itself: fades in after a delay instead of blocking first paint */
+.reap-home .offer-modal { animation: gate-in 0.45s ease both; }
+.reap-home .offer-modal[hidden] { display: none; }
+@keyframes gate-in { from { opacity: 0; } to { opacity: 1; } }
+.reap-home .offer-modal .gate-panel { position: relative; animation: panel-rise 0.55s var(--ease-out-quint) both; }
+@keyframes panel-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+.reap-home .modal-close { position: absolute; top: 18px; right: 20px; background: none; border: none; color: rgba(255, 255, 255, 0.6); font-size: 26px; line-height: 1; cursor: pointer; padding: 6px; transition: color 0.15s ease; }
+.reap-home .modal-close:hover { color: var(--gold-400); }
+.reap-home .gate-form button.alt-path { background: none; border: none; cursor: pointer; font-family: var(--font-body); }
+@media (prefers-reduced-motion: reduce) {
+  .reap-home .offerings-gate.gate-out { transition: none; }
+  .reap-home .offer-modal,
+  .reap-home .offer-modal .gate-panel { animation: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .reap-home .hload {

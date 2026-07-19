@@ -15,10 +15,12 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { label: 'The Firm', href: '/#firm', order: 1 },
   { label: 'The Method', href: '/#method', order: 2 },
+  // NOTE: /offerings is deliberately NOT in the nav — deal rooms are gated
+  // (self-certification interstitial, noindexed) and reached via links shared
+  // through the /invest request-access flow. See LUCID-DEALROOM.md.
   { label: 'Track Record', href: '/track-record', order: 3 },
-  { label: 'Offerings', href: '/offerings', order: 4 },
-  { label: 'The Team', href: '/#team', order: 5 },
-  { label: 'Perspectives', href: '/blog', order: 6 },
+  { label: 'The Team', href: '/#team', order: 4 },
+  { label: 'Perspectives', href: '/blog', order: 5 },
 ];
 
 /**

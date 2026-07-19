@@ -235,7 +235,15 @@ bodies are `{ "error": "…" }`.
 
 - **Path chosen**: headless API (path 2), rendered with the site's own
   design system (`reap-home.css` grammar) — not the widget, not the LucidOS
-  themes.
+  themes. The deal page is a standalone split-view experience (sticky olive
+  identity sidebar + light reading column), same grammar as `/invest`.
+- **Gated + unlisted (important)**: Reap accepts non-accredited investors
+  (506(b) posture), so offerings are NOT publicly advertised: no nav link,
+  `noindex` meta + `X-Robots-Tag` on every `/offerings` route, and an
+  `OfferingsGate` self-certification interstitial (localStorage ack, 30
+  days) on the index and deal pages. Deal links are shared with prospects
+  through the `/invest` request-access flow. Do not add `/offerings` back
+  to the nav or sitemap without confirming the compliance posture changed.
 - **Client**: `src/lib/dealroom.ts`. Env vars `DEALROOM_API_URL` /
   `DEALROOM_API_KEY` are declared in `astro.config.mjs` (server-side; the
   key is a secret) and read via `astro:env/server`.

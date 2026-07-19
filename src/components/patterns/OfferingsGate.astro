@@ -1,0 +1,151 @@
+---
+/**
+ * OfferingsGate — request-access questionnaire gating the /offerings pages
+ * (Gray Capital-style: anyone may enter by answering a few questions; the
+ * questionnaire is both the self-certification and the lead capture).
+ * Offerings stay unlisted (no nav link, noindexed); this gate fronts them
+ * for anyone who lands on a shared link.
+ *
+ * Submitting registers the visitor as a prospect via the key-less LucidOS
+ * interest endpoint (when a raiseId is provided) and unlocks the room for
+ * 30 days (localStorage). A failed POST still unlocks — the gate's job is
+ * acknowledgment + capture, not a hard auth wall — and the in-page interest
+ * form remains as the retry path.
+ *
+ * Fails closed: server-rendered visible, only removed by script. The inline
+ * script removes it pre-paint for visitors with a standing acknowledgment.
+ */
+import logomark from '@/assets/reap/reap-logomark-gold.svg';
+
+interface Props {
+  /** Raise to register interest against; omit when none is active. */
+  raiseId?: string | null;
+  apiBaseUrl?: string;
+}
+
+const { raiseId = null, apiBaseUrl = '' } = Astro.props;
+const action = raiseId ? `${apiBaseUrl}/v1/raises/${raiseId}/interest` : '';
+---
+
+<div class="offerings-gate" id="offerings-gate" data-action={action}>
+  <div class="gate-panel">
+    <img class="gate-mark" src={logomark.src} width="52" height="52" alt="" />
+    <span class="eyebrow on-dark">Private Offering</span>
+    <h2 class="display">Enter the <em>deal room.</em></h2>
+    <p>
+      Reap Capital's offerings are shared privately with investors we know. Tell us who you are to
+      view this deal — we'll follow up personally, and nothing here is an offer to sell securities.
+    </p>
+    <form class="invest-form gate-form" novalidate>
+      <div class="field">
+        <label for="gate-name">Name</label>
+        <input id="gate-name" name="fullName" type="text" autocomplete="name" required maxlength="200" />
+      </div>
+      <div class="field">
+        <label for="gate-email">Email</label>
+        <input id="gate-email" name="email" type="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="gate-status">Investor Status</label>
+        <select id="gate-status" name="investorStatus">
+          <option value="Accredited investor">Accredited investor</option>
+          <option value="Non-accredited (sophisticated) investor">Non-accredited (sophisticated)</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gate-range">Investment Range <span class="opt">(optional)</span></label>
+        <select id="gate-range" name="investmentRange">
+          <option value="">Prefer not to say</option>
+          <option value="Under $50k">Under $50k</option>
+          <option value="$50k – $100k">$50k – $100k</option>
+          <option value="$100k – $250k">$100k – $250k</option>
+          <option value="$250k – $500k">$250k – $500k</option>
+          <option value="$500k+">$500k+</option>
+        </select>
+      </div>
+      <div class="field field-wide form-actions">
+        <button class="btn gold" type="submit">Enter the Deal Room <span aria-hidden="true">⟶</span></button>
+        <a class="alt-path" href="/">Return to site</a>
+      </div>
+      <p class="form-status field-wide" role="status" aria-live="polite"></p>
+    </form>
+    <p class="gate-fine">
+      By continuing you confirm you are a sophisticated investor capable of evaluating the merits
+      and risks of a private real estate investment. Offers are made only through official offering
+      documents provided to qualified investors. Past performance is not indicative of future
+      results.
+    </p>
+  </div>
+</div>
+
+<script is:inline>
+  // Runs synchronously before first paint — returning visitors skip the gate
+  (function () {
+    try {
+      var ack = localStorage.getItem('reap:dealroom-access');
+      if (ack && Date.now() - Number(ack) < 30 * 24 * 60 * 60 * 1000) {
+        var gate = document.getElementById('offerings-gate');
+        if (gate) gate.remove();
+        return;
+      }
+    } catch (e) {
+      /* storage unavailable — leave the gate up and let the form dismiss it */
+    }
+    document.documentElement.classList.add('gate-locked');
+  })();
+</script>
+
+<script>
+  function unlockGate(gate: HTMLElement) {
+    try {
+      localStorage.setItem('reap:dealroom-access', String(Date.now()));
+    } catch {
+      /* private mode — unlock for this page view only */
+    }
+    gate.classList.add('gate-out');
+    document.documentElement.classList.remove('gate-locked');
+    setTimeout(() => gate.remove(), 450);
+  }
+
+  function initOfferingsGate() {
+    const gate = document.getElementById('offerings-gate');
+    if (!gate || gate.dataset.wired) return;
+    gate.dataset.wired = 'true';
+    const form = gate.querySelector<HTMLFormElement>('.gate-form');
+    const status = gate.querySelector<HTMLElement>('.form-status');
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (button) button.disabled = true;
+      if (status) status.textContent = 'One moment…';
+
+      // Register the prospect with LucidOS when a raise is attached; the
+      // gate opens either way (capture, not authentication)
+      const action = gate.dataset.action;
+      if (action) {
+        const data = new FormData(form);
+        const payload: Record<string, string> = { sourceUrl: location.href };
+        for (const key of ['fullName', 'email', 'investmentRange']) {
+          const value = data.get(key)?.toString().trim();
+          if (value) payload[key] = value;
+        }
+        const investorStatus = data.get('investorStatus')?.toString().trim();
+        payload.message = `Deal room access request${investorStatus ? ` — Investor status: ${investorStatus}` : ''}`;
+        try {
+          await fetch(action, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+        } catch (error) {
+          console.warn('[offerings-gate] interest registration failed', error);
+        }
+      }
+      unlockGate(gate);
+    });
+  }
+  document.addEventListener('astro:page-load', initOfferingsGate);
+</script>

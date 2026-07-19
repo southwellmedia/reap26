@@ -1,0 +1,164 @@
+---
+/**
+ * OfferModal — homepage prompt for the current private offering (the Gray
+ * Capital popup pattern). Deliberately deal-agnostic: no property name or
+ * return figures appear here — Reap accepts non-accredited investors
+ * (506(b) posture), so specifics stay behind the capture wall. Submitting
+ * registers the prospect with LucidOS, stores the same 30-day deal-room
+ * access token the OfferingsGate uses, and redirects into the room.
+ *
+ * Shows only when /api/dealroom-status reports an active raise, the visitor
+ * has no standing access token, and the modal wasn't dismissed in the last
+ * 7 days. Appears after a short delay; dismissible via ×, Esc, or backdrop.
+ */
+import logomark from '@/assets/reap/reap-logomark-gold.svg';
+import { DEALROOM_BASE_URL } from '@/lib/dealroom';
+---
+
+<div class="offerings-gate offer-modal" id="offer-modal" data-api-base={DEALROOM_BASE_URL} hidden>
+  <div class="gate-panel" role="dialog" aria-modal="true" aria-labelledby="offer-modal-title">
+    <button class="modal-close" type="button" data-modal-close aria-label="Close">×</button>
+    <img class="gate-mark" src={logomark.src} width="52" height="52" alt="" />
+    <span class="eyebrow on-dark">Current Offering</span>
+    <h2 class="display" id="offer-modal-title">A private offering is <em>open now.</em></h2>
+    <p>
+      Reap Capital is currently raising for a private multifamily investment. Tell us who you are
+      to view the deal room — the business plan, target returns, and terms, laid out deal by deal.
+    </p>
+    <form class="invest-form gate-form" novalidate>
+      <div class="field">
+        <label for="om-name">Name</label>
+        <input id="om-name" name="fullName" type="text" autocomplete="name" required maxlength="200" />
+      </div>
+      <div class="field">
+        <label for="om-email">Email</label>
+        <input id="om-email" name="email" type="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="om-status">Investor Status</label>
+        <select id="om-status" name="investorStatus">
+          <option value="Accredited investor">Accredited investor</option>
+          <option value="Non-accredited (sophisticated) investor">Non-accredited (sophisticated)</option>
+          <option value="Not sure yet">Not sure yet</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="om-range">Investment Range <span class="opt">(optional)</span></label>
+        <select id="om-range" name="investmentRange">
+          <option value="">Prefer not to say</option>
+          <option value="Under $50k">Under $50k</option>
+          <option value="$50k – $100k">$50k – $100k</option>
+          <option value="$100k – $250k">$100k – $250k</option>
+          <option value="$250k – $500k">$250k – $500k</option>
+          <option value="$500k+">$500k+</option>
+        </select>
+      </div>
+      <div class="field field-wide form-actions">
+        <button class="btn gold" type="submit">View the Deal Room <span aria-hidden="true">⟶</span></button>
+        <button class="alt-path" type="button" data-modal-close>Not now</button>
+      </div>
+      <p class="form-status field-wide" role="status" aria-live="polite"></p>
+    </form>
+    <p class="gate-fine">
+      By continuing you confirm you are a sophisticated investor capable of evaluating the merits
+      and risks of a private real estate investment. This is not an offer to sell securities;
+      offers are made only through official offering documents provided to qualified investors.
+    </p>
+  </div>
+</div>
+
+<script>
+  const ACCESS_KEY = 'reap:dealroom-access';
+  const DISMISS_KEY = 'reap:offer-modal-dismissed';
+  const ACCESS_TTL = 30 * 24 * 60 * 60 * 1000;
+  const DISMISS_TTL = 7 * 24 * 60 * 60 * 1000;
+
+  function fresh(key: string, ttl: number): boolean {
+    try {
+      const value = localStorage.getItem(key);
+      return Boolean(value) && Date.now() - Number(value) < ttl;
+    } catch {
+      return false;
+    }
+  }
+
+  async function initOfferModal() {
+    const modal = document.getElementById('offer-modal');
+    if (!modal || modal.dataset.wired) return;
+    modal.dataset.wired = 'true';
+
+    if (fresh(ACCESS_KEY, ACCESS_TTL) || fresh(DISMISS_KEY, DISMISS_TTL)) return;
+
+    let raiseId: string | null = null;
+    try {
+      const res = await fetch('/api/dealroom-status');
+      const status = res.ok ? await res.json() : null;
+      if (!status?.active || !status.raiseId) return;
+      raiseId = status.raiseId;
+    } catch {
+      return; // status route unreachable — never block the homepage over it
+    }
+
+    const dismiss = () => {
+      try {
+        localStorage.setItem(DISMISS_KEY, String(Date.now()));
+      } catch {
+        /* private mode */
+      }
+      modal.classList.add('gate-out');
+      document.documentElement.classList.remove('gate-locked');
+      setTimeout(() => modal.remove(), 450);
+    };
+
+    modal.querySelectorAll('[data-modal-close]').forEach((el) => el.addEventListener('click', dismiss));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) dismiss();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('offer-modal')) dismiss();
+    });
+
+    const form = modal.querySelector<HTMLFormElement>('.gate-form');
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const status = form.querySelector<HTMLElement>('.form-status');
+      if (button) button.disabled = true;
+      if (status) status.textContent = 'One moment…';
+
+      const data = new FormData(form);
+      const payload: Record<string, string> = { sourceUrl: location.href };
+      for (const key of ['fullName', 'email', 'investmentRange']) {
+        const value = data.get(key)?.toString().trim();
+        if (value) payload[key] = value;
+      }
+      const investorStatus = data.get('investorStatus')?.toString().trim();
+      payload.message = `Deal room access request (homepage)${investorStatus ? ` — Investor status: ${investorStatus}` : ''}`;
+      try {
+        await fetch(`${modal.dataset.apiBase}/v1/raises/${raiseId}/interest`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch (error) {
+        console.warn('[offer-modal] interest registration failed', error);
+      }
+      try {
+        localStorage.setItem(ACCESS_KEY, String(Date.now()));
+      } catch {
+        /* private mode — the deal-room gate will ask again */
+      }
+      window.location.assign(`/offerings/${raiseId}`);
+    });
+
+    // Reveal after the visitor has had a moment with the page
+    setTimeout(() => {
+      if (!document.getElementById('offer-modal')) return;
+      modal.hidden = false;
+      document.documentElement.classList.add('gate-locked');
+    }, 6000);
+  }
+
+  document.addEventListener('astro:page-load', initOfferModal);
+</script>

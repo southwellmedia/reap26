@@ -26,12 +26,14 @@ interface Props {
   heroPhoto?: string;
   image?: string;
   imageAlt?: string;
+  /** Keep the page out of search indexes (gated pages, e.g. /offerings). */
+  noindex?: boolean;
 }
 
-const { title, description, eyebrow, lede, heroPhoto, image, imageAlt } = Astro.props;
+const { title, description, eyebrow, lede, heroPhoto, image, imageAlt, noindex } = Astro.props;
 ---
 
-<HomeLayout title={title} description={description} image={image} imageAlt={imageAlt}>
+<HomeLayout title={title} description={description} image={image} imageAlt={imageAlt} noindex={noindex}>
   <section class="subhero">
     {
       heroPhoto && (

@@ -59,3 +59,5 @@ package-lock.json
 # Internal docs
 southwell-astro-boilerplate-docs.md
 southwell-astro-boilerplate-prd.md
+
+.vercel
