@@ -135,14 +135,40 @@ import { DEALROOM_BASE_URL } from '@/lib/dealroom';
       }
       const investorStatus = data.get('investorStatus')?.toString().trim();
       payload.message = `Deal room access request (homepage)${investorStatus ? ` — Investor status: ${investorStatus}` : ''}`;
+
+      const setError = (text: string) => {
+        if (status) {
+          status.classList.add('error');
+          status.textContent = text;
+        }
+        if (button) button.disabled = false;
+      };
+
+      // Same rule as the deal-room gate: no prospect registered, no entry
       try {
-        await fetch(`${modal.dataset.apiBase}/v1/raises/${raiseId}/interest`, {
+        const res = await fetch(`${modal.dataset.apiBase}/v1/raises/${raiseId}/interest`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify(payload),
         });
-      } catch (error) {
-        console.warn('[offer-modal] interest registration failed', error);
+        if (!res.ok) {
+          if (res.status === 429) {
+            setError('Too many requests from your connection — try again in an hour, or email info@reapcap.com.');
+          } else {
+            const body = await res.json().catch(() => null);
+            setError(
+              body?.error
+                ? `We couldn’t register your request: ${body.error}`
+                : 'We couldn’t register your request — please email info@reapcap.com for access.'
+            );
+          }
+          return;
+        }
+      } catch {
+        setError(
+          'We couldn’t reach the registration service — an ad blocker may be interfering. Please retry or email info@reapcap.com.'
+        );
+        return;
       }
       try {
         localStorage.setItem(ACCESS_KEY, String(Date.now()));

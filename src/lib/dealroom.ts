@@ -3,8 +3,8 @@
  *
  * Server/build-time only: the API key is a secret shared by every raise, so
  * these functions must never be imported into client-side code. The one
- * browser-safe endpoint (interest POST) needs no key and is handled by
- * DealRoomInterestForm.astro.
+ * browser-safe endpoint (interest POST) needs no key and is called from the
+ * OfferingsGate / OfferModal questionnaires.
  *
  * Pages are statically built, so a fetch failure here would take down the
  * whole deploy. listPublicRaises() therefore degrades to an empty list with

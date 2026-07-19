@@ -259,10 +259,14 @@ bodies are `{ "error": "…" }`.
   404s when the raise is gone and only errors on genuine API failures.
 - **Deploy note**: `DEALROOM_API_KEY` must be set in the Vercel project's
   environment variables (it is a runtime secret now, not just build-time).
-- **Interest form**: `src/components/patterns/DealRoomInterestForm.astro`,
-  posts from the browser straight to LucidOS (no key). If the sponsor later
-  enables reCAPTCHA in LucidOS, submissions will start failing with 400 —
-  the form component must then be extended to load reCAPTCHA and send
-  `recaptchaToken`, and the site rebuilt.
+- **Interest capture**: the `OfferingsGate` questionnaire (deal pages) and
+  homepage `OfferModal` post from the browser straight to the key-less
+  LucidOS interest endpoint. Registration must SUCCEED before the room
+  unlocks — failures surface an error rather than silently losing the
+  prospect. There is deliberately no second form inside the room; it ends
+  with a "What Happens Next" section (follow-up → portal invitation, where
+  documents and soft commits live). If the sponsor later enables reCAPTCHA
+  in LucidOS, submissions will start failing with 400 — the gate/modal must
+  then be extended to send `recaptchaToken`, and the site redeployed.
 - **Markdown** (`summaryMd`, `bioMd`) is rendered at build time with
   `marked`.

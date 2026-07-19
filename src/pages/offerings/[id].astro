@@ -16,7 +16,6 @@
  */
 import { marked } from 'marked';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import DealRoomInterestForm from '@/components/patterns/DealRoomInterestForm.astro';
 import OfferingsGate from '@/components/patterns/OfferingsGate.astro';
 import '@/styles/reap-home.css';
 import logomark from '@/assets/reap/reap-logomark-gold.svg';
@@ -169,9 +168,9 @@ const pct = progress.percentOfTarget;
           }
 
           {
-            !isClosed && interest.enabled && (
-              <a class="btn gold" href="#interest">
-                Express Interest <span aria-hidden="true">⟶</span>
+            !isClosed && (
+              <a class="btn gold" href="mailto:info@reapcap.com">
+                Speak With the Operators <span aria-hidden="true">⟶</span>
               </a>
             )
           }
@@ -221,22 +220,53 @@ const pct = progress.percentOfTarget;
           )
         }
 
-        <div class="dealroom-interest-block" id="interest">
+        <div class="dealroom-interest-block" id="next">
           {
             interest.enabled && !isClosed ? (
               <>
-                <span class="eyebrow">Express Interest</span>
-                <h2 class="display display-2">See the full <em>deal room.</em></h2>
+                <span class="eyebrow">What Happens Next</span>
+                <h2 class="display display-2">From here to <em>allocated.</em></h2>
                 <p class="interest-lede">
-                  Documents, detailed financials, and the address live in the invite-only investor
-                  portal. Tell us who you are and we follow up personally with access — usually
-                  within two business days.
+                  You're on the list for this offering — entering the deal room registered your
+                  interest with our team. Documents, detailed financials, and soft commitments live
+                  in the invite-only investor portal.
                 </p>
-                <DealRoomInterestForm
-                  raiseId={raise.id}
-                  apiBaseUrl={DEALROOM_BASE_URL}
-                  recaptchaSiteKey={interest.recaptchaSiteKey}
-                />
+                <ol class="next-steps">
+                  <li>
+                    <span class="num">01</span>
+                    <div>
+                      <h3>Interest registered</h3>
+                      <p>
+                        Your request is in our fundraising pipeline for this deal — no forms left to
+                        fill out here.
+                      </p>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="num">02</span>
+                    <div>
+                      <h3>Personal follow-up</h3>
+                      <p>
+                        The team reaches out within two business days to answer questions and
+                        confirm fit — operators, not salespeople.
+                      </p>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="num">03</span>
+                    <div>
+                      <h3>Portal invitation</h3>
+                      <p>
+                        You receive an invitation to the investor portal: full offering documents,
+                        detailed underwriting, and the ability to soft-commit your allocation.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
+                <p class="interest-lede">
+                  Already invited? <a class="portal-link" href="https://lucid.madstack.io">Open the investor portal</a> —
+                  or email <a class="portal-link" href="mailto:info@reapcap.com">info@reapcap.com</a> with questions.
+                </p>
               </>
             ) : (
               <>

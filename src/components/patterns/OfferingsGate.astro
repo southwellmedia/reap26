@@ -8,9 +8,9 @@
  *
  * Submitting registers the visitor as a prospect via the key-less LucidOS
  * interest endpoint (when a raiseId is provided) and unlocks the room for
- * 30 days (localStorage). A failed POST still unlocks — the gate's job is
- * acknowledgment + capture, not a hard auth wall — and the in-page interest
- * form remains as the retry path.
+ * 30 days (localStorage). Registration must SUCCEED before the room opens —
+ * a silent failure would mean an invisible prospect, which defeats the
+ * gate's purpose. Failures surface an error with the email fallback.
  *
  * Fails closed: server-rendered visible, only removed by script. The inline
  * script removes it pre-paint for visitors with a standing acknowledgment.
@@ -122,8 +122,16 @@ const action = raiseId ? `${apiBaseUrl}/v1/raises/${raiseId}/interest` : '';
       if (button) button.disabled = true;
       if (status) status.textContent = 'One moment…';
 
-      // Register the prospect with LucidOS when a raise is attached; the
-      // gate opens either way (capture, not authentication)
+      const setError = (text: string) => {
+        if (status) {
+          status.classList.add('error');
+          status.textContent = text;
+        }
+        if (button) button.disabled = false;
+      };
+
+      // The room only opens once LucidOS has the prospect — a silently lost
+      // registration would look like success while nobody ever follows up
       const action = gate.dataset.action;
       if (action) {
         const data = new FormData(form);
@@ -135,13 +143,29 @@ const action = raiseId ? `${apiBaseUrl}/v1/raises/${raiseId}/interest` : '';
         const investorStatus = data.get('investorStatus')?.toString().trim();
         payload.message = `Deal room access request${investorStatus ? ` — Investor status: ${investorStatus}` : ''}`;
         try {
-          await fetch(action, {
+          const res = await fetch(action, {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify(payload),
           });
-        } catch (error) {
-          console.warn('[offerings-gate] interest registration failed', error);
+          if (!res.ok) {
+            if (res.status === 429) {
+              setError('Too many requests from your connection — try again in an hour, or email info@reapcap.com.');
+            } else {
+              const body = await res.json().catch(() => null);
+              setError(
+                body?.error
+                  ? `We couldn’t register your request: ${body.error}`
+                  : 'We couldn’t register your request — please email info@reapcap.com for access.'
+              );
+            }
+            return;
+          }
+        } catch {
+          setError(
+            'We couldn’t reach the registration service — an ad blocker may be interfering. Please retry or email info@reapcap.com.'
+          );
+          return;
         }
       }
       unlockGate(gate);

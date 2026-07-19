@@ -522,6 +522,8 @@ html.js-rvl .reap-home .sec-head.rvl.rvl-in::after { transform: scaleX(1); }
 .reap-home .dealroom-profile dt { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
 .reap-home .dealroom-profile dd { margin: 0; font-size: 14px; font-weight: 600; color: var(--green-950); text-align: right; }
 .reap-home .dealroom-interest-block { display: flex; flex-direction: column; gap: 20px; scroll-margin-top: 48px; border-top: 1px solid var(--reap-hairline); padding-top: 56px; }
+.reap-home .portal-link { color: var(--green-900); text-decoration: underline; text-decoration-color: var(--gold-400); text-underline-offset: 4px; transition: color 0.15s ease; }
+.reap-home .portal-link:hover { color: var(--gold-text); }
 
 @media (max-width: 1024px) {
   .reap-home.dealroom-page { grid-template-columns: 1fr; }
