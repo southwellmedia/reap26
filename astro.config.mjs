@@ -2,10 +2,16 @@ import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
+import vercel from '@astrojs/vercel';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: process.env.SITE_URL || 'https://reapcapital.com',
+
+  // Static-first with per-page opt-out: marketing pages stay prerendered;
+  // /offerings/* and the form API routes set `prerender = false` so raise
+  // data (funding progress, visibility) is fresh on every request.
+  adapter: vercel(),
 
   env: {
     schema: {
@@ -19,6 +25,10 @@ export default defineConfig({
       PUBLIC_GOOGLE_MAPS_API_KEY: envField.string({ context: 'client', access: 'public', optional: true, default: '' }),
       PUBLIC_CONSENT_ENABLED: envField.boolean({ context: 'client', access: 'public', optional: true, default: false }),
       PUBLIC_PRIVACY_POLICY_URL: envField.string({ context: 'client', access: 'public', optional: true, default: '' }),
+      // LucidOS deal rooms (see LUCID-DEALROOM.md). The key is a shared
+      // secret — server/build code only, never the browser.
+      DEALROOM_API_URL: envField.string({ context: 'server', access: 'public', optional: true, default: 'https://lucid.madstack.io/api/dealroom' }),
+      DEALROOM_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 

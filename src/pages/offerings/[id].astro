@@ -1,0 +1,223 @@
+---
+/**
+ * Deal room teaser — /offerings/[id]
+ * One page per publicly visible LucidOS raise (see LUCID-DEALROOM.md),
+ * server-rendered from GET /v1/raises/{id} with a 60s CDN cache. The payload
+ * is teaser-tier by design — no documents, financials, or street address —
+ * so everything here is marketing content plus the interest form, which
+ * posts straight to LucidOS from the browser. A raise the sponsor hides (or
+ * that closes and disappears) 404s per the vendor guide, never errors.
+ */
+import { marked } from 'marked';
+import SubpageLayout from '@/layouts/SubpageLayout.astro';
+import SectionHead from '@/components/home/SectionHead.astro';
+import DealRoomInterestForm from '@/components/patterns/DealRoomInterestForm.astro';
+import {
+  getTeaser,
+  formatMoney,
+  formatPercent,
+  formatMultiple,
+  formatCloseDate,
+  cadenceLabel,
+  locationLabel,
+  toEmbedUrl,
+  DEALROOM_BASE_URL,
+} from '@/lib/dealroom';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+// Raise IDs are UUIDs — anything else can skip the API round-trip
+const teaser = id && /^[0-9a-f-]{36}$/i.test(id) ? await getTeaser(id) : null;
+if (!teaser) return Astro.rewrite('/offerings/unavailable');
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
+
+const { raise, deal, dealRoom, metrics, progress, interest } = teaser;
+
+const isClosed = raise.status === 'closed';
+const name = deal?.name ?? raise.name;
+const location = locationLabel(deal);
+const embedUrl = toEmbedUrl(dealRoom.videoUrl);
+const summaryHtml = dealRoom.summaryMd ? marked.parse(dealRoom.summaryMd, { async: false }) : null;
+
+const OFFERING_DISCLAIMER =
+  'This is not an offer to sell securities. Offerings are made only to qualified investors through official offering documents inside the investor portal.';
+
+// Hero ticker — target metrics first, raise terms as fallback, max 4 cells
+const heroStats: { n: string; l: string }[] = [
+  { n: formatPercent(metrics?.targetIrr ?? null), l: 'Target IRR' },
+  { n: formatMultiple(metrics?.targetEquityMultiple ?? null), l: 'Target Equity Multiple' },
+  { n: formatPercent(metrics?.targetCashOnCash ?? null), l: 'Target Cash-on-Cash' },
+  {
+    n: metrics?.holdPeriodYears ?? deal?.holdPeriodYears
+      ? `${metrics?.holdPeriodYears ?? deal?.holdPeriodYears} Yr`
+      : null,
+    l: 'Target Hold',
+  },
+  { n: formatMoney(raise.targetRaise), l: 'Target Raise' },
+  { n: formatMoney(raise.minimumInvestment), l: 'Minimum Investment' },
+]
+  .filter((stat): stat is { n: string; l: string } => stat.n !== null)
+  .slice(0, 4);
+
+// Deal-summary rail
+const facts: { label: string; value: string | null }[] = [
+  { label: 'Location', value: location },
+  { label: 'Asset Type', value: deal?.propertyType ?? null },
+  { label: 'Units', value: deal?.unitCount ? String(deal.unitCount) : null },
+  { label: 'Year Built', value: deal?.yearBuilt ? String(deal.yearBuilt) : null },
+  {
+    label: 'Square Footage',
+    value: deal?.squareFootage ? deal.squareFootage.toLocaleString('en-US') : null,
+  },
+  { label: 'Target Raise', value: formatMoney(raise.targetRaise) },
+  { label: 'Minimum Investment', value: formatMoney(raise.minimumInvestment) },
+  { label: 'Distributions', value: cadenceLabel(raise.distributionCadence) },
+  { label: 'Anticipated Close', value: formatCloseDate(raise.closeDate) },
+  { label: 'Status', value: isClosed ? 'Fully Subscribed' : 'Open' },
+];
+const shownFacts = facts.filter((fact) => fact.value !== null);
+
+const pct = progress.percentOfTarget;
+---
+
+<SubpageLayout
+  title={`${name} — Current Offering`}
+  description={dealRoom.headline ??
+    `${name} — a Reap Capital investment offering${location ? ` in ${location}` : ''}.`}
+  eyebrow={[isClosed ? 'Fully Subscribed' : 'Open Offering', location].filter(Boolean).join(' · ')}
+  heroPhoto={dealRoom.coverImageUrl ?? undefined}
+  image={dealRoom.coverImageUrl ?? undefined}
+  imageAlt={dealRoom.coverImageUrl ? name : undefined}
+  lede={dealRoom.headline ?? undefined}
+>
+  <a class="back-link" href="/offerings" slot="before-heading">
+    <span aria-hidden="true">⟵</span> Current Offerings
+  </a>
+  <Fragment slot="heading">{name}</Fragment>
+  {
+    heroStats.length > 0 && (
+      <div class="wrap" slot="hero-extra">
+        <div class="ticker">
+          {heroStats.map((stat) => (
+            <div>
+              <div class="n">{stat.n}</div>
+              <div class="l">{stat.l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  <section class="block">
+    <div class="wrap">
+      <div class="case-layout">
+        <div class="case-body post-body">
+          {summaryHtml ? <Fragment set:html={summaryHtml} /> : <p>{dealRoom.headline}</p>}
+          {
+            embedUrl && (
+              <div class="deal-video">
+                <iframe
+                  src={embedUrl}
+                  title={`${name} — offering video`}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                />
+              </div>
+            )
+          }
+        </div>
+
+        <aside class="case-aside">
+          <div class="case-facts">
+            <span class="eyebrow on-dark">Deal Summary</span>
+            <dl>
+              {
+                shownFacts.map((fact) => (
+                  <div class="row">
+                    <dt>{fact.label}</dt>
+                    <dd>{fact.value}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+            {
+              (pct !== null || progress.committedCount > 0) && (
+                <div class="raise-progress">
+                  {pct !== null && (
+                    <>
+                      <div class="bar" role="progressbar" aria-valuenow={pct} aria-valuemin="0" aria-valuemax="100" aria-label="Funding progress">
+                        <div class="fill" style={`width:${Math.min(pct, 100)}%`} />
+                      </div>
+                      <div class="legend">
+                        <span>{pct}% of target committed</span>
+                        {progress.committedCount > 0 && <span>{progress.committedCount} investors</span>}
+                      </div>
+                    </>
+                  )}
+                  {pct === null && progress.committedCount > 0 && (
+                    <div class="legend">
+                      <span>{progress.committedCount} investors committed</span>
+                    </div>
+                  )}
+                </div>
+              )
+            }
+            <p class="facts-disclosure">{OFFERING_DISCLAIMER}</p>
+          </div>
+          {
+            !isClosed && (
+              <a class="btn gold" href="#interest" style="align-self:flex-start">
+                Express Interest <span aria-hidden="true">⟶</span>
+              </a>
+            )
+          }
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="block tinted" id="interest">
+    <div class="wrap">
+      {
+        interest.enabled && !isClosed ? (
+          <>
+            <SectionHead label="Express Interest" />
+            <div class="interest-block">
+              <h2 class="display display-2">See the full <em>deal room.</em></h2>
+              <p class="interest-lede">
+                Documents, detailed financials, and the address live in the invite-only investor
+                portal. Tell us who you are and we follow up personally with access — usually within
+                two business days.
+              </p>
+              <DealRoomInterestForm
+                raiseId={raise.id}
+                apiBaseUrl={DEALROOM_BASE_URL}
+                recaptchaSiteKey={interest.recaptchaSiteKey}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <SectionHead label="Fully Subscribed" />
+            <div class="interest-block">
+              <h2 class="display display-2">This offering is <em>fully subscribed.</em></h2>
+              <p class="interest-lede">
+                Every allocation in {name} has been committed. Request access and you will hear
+                about the next offering before it reaches this page.
+              </p>
+              <div class="cta-actions" style="justify-content:flex-start">
+                <a class="btn line" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
+                <a class="btn line" href="/offerings">Back to Offerings <span aria-hidden="true">⟶</span></a>
+              </div>
+            </div>
+          </>
+        )
+      }
+    </div>
+  </section>
+</SubpageLayout>
