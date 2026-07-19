@@ -1,0 +1,128 @@
+---
+/**
+ * Current Offerings — /offerings
+ * Index of every publicly visible LucidOS raise (see LUCID-DEALROOM.md).
+ * Fetched at BUILD time from the deal-room API; when no raise is public (or
+ * the API key isn't configured) the page renders its empty state and points
+ * visitors at /invest instead. Rebuild on a schedule while a raise is open —
+ * funding progress and visibility change between deploys.
+ */
+import SubpageLayout from '@/layouts/SubpageLayout.astro';
+import SectionHead from '@/components/home/SectionHead.astro';
+import CtaVideo from '@/components/patterns/CtaVideo.astro';
+import { listPublicRaises, formatMoney, locationLabel } from '@/lib/dealroom';
+import { firmStats } from '@/config/stats.config';
+import logomark from '@/assets/reap/reap-logomark-gold.svg';
+
+const raises = await listPublicRaises();
+// Active raises lead; fully subscribed ones stay visible as social proof
+const sorted = [...raises].sort((a, b) => (a.status === b.status ? 0 : a.status === 'active' ? -1 : 1));
+const activeCount = raises.filter((r) => r.status === 'active').length;
+
+const OFFERING_DISCLAIMER =
+  'This is not an offer to sell securities. Offerings are made only to qualified investors through official offering documents inside the investor portal.';
+
+function cardMeta(raise: (typeof raises)[number]): string {
+  const parts = [
+    raise.status === 'active' ? 'Open' : 'Fully Subscribed',
+    locationLabel(raise.deal),
+    raise.deal?.propertyType,
+    raise.deal?.unitCount ? `${raise.deal.unitCount} Units` : null,
+  ];
+  return parts.filter(Boolean).join(' · ');
+}
+---
+
+<SubpageLayout
+  title="Current Offerings"
+  description="Reap Capital's open investment offerings — value-add multifamily deals with the target returns, minimums, and business plan laid out before you commit."
+  eyebrow="Current Offerings"
+  lede={activeCount > 0
+    ? `${activeCount === 1 ? 'One offering is' : `${activeCount} offerings are`} open now. Each deal room lays out the business plan, target returns, and terms — express interest and we follow up personally with full access.`
+    : 'Nothing is open at this moment — our pipeline moves deal by deal, not on a fundraising calendar. Request access and you will hear about the next offering before it is public.'}
+>
+  <Fragment slot="heading">What's open <em>right now.</em></Fragment>
+
+  {
+    sorted.length > 0 ? (
+      <section class="block" id="offerings">
+        <div class="wrap">
+          <SectionHead label={activeCount > 0 ? 'Open Offerings' : 'Recent Offerings'} />
+          <div class="props" style="margin-top:56px">
+            {sorted.map((raise) => (
+              <a class="prop" href={`/offerings/${raise.id}`}>
+                <div class={`ph${raise.coverImageUrl ? '' : ' noimg'}`}>
+                  {raise.coverImageUrl ? (
+                    <img src={raise.coverImageUrl} alt={raise.deal?.name ?? raise.name} loading="lazy" />
+                  ) : (
+                    <img src={logomark.src} alt="" loading="lazy" />
+                  )}
+                  {raise.status === 'closed' && <span class="tag subscribed">Fully Subscribed</span>}
+                </div>
+                <div class="bd">
+                  <span class="meta">{cardMeta(raise)}</span>
+                  <h3>{raise.deal?.name ?? raise.name}</h3>
+                  {raise.headline && <p class="blurb">{raise.headline}</p>}
+                  {(raise.targetRaise || raise.minimumInvestment) && (
+                    <div class="raise-figs">
+                      {raise.targetRaise && (
+                        <div>
+                          <div class="n">{formatMoney(raise.targetRaise)}</div>
+                          <div class="l">Target Raise</div>
+                        </div>
+                      )}
+                      {raise.minimumInvestment && (
+                        <div>
+                          <div class="n">{formatMoney(raise.minimumInvestment)}</div>
+                          <div class="l">Minimum</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <span class="more">
+                    {raise.status === 'active' ? 'View the Deal Room' : 'View the Deal'}{' '}
+                    <span aria-hidden="true">⟶</span>
+                  </span>
+                </div>
+              </a>
+            ))}
+          </div>
+          <p class="note-disclosure">{OFFERING_DISCLAIMER}</p>
+        </div>
+      </section>
+    ) : (
+      <section class="block" id="offerings">
+        <div class="wrap">
+          <SectionHead label="Between Offerings" />
+          <div class="offerings-empty">
+            <h2 class="display display-2">Nothing open — <em>by design.</em></h2>
+            <p>
+              We buy when the basis is right, not when a fund calendar says so. {firmStats.transactions}{' '}
+              transactions since {firmStats.transactionsSinceYear} have all worked that way. Request
+              access now and the next offering lands in your inbox before it reaches this page.
+            </p>
+            <div class="cta-actions" style="justify-content:flex-start">
+              <a class="btn line" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
+              <a class="btn line" href="/track-record">See the Track Record <span aria-hidden="true">⟶</span></a>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="cta">
+    <CtaVideo />
+    <div class="cta-in">
+      <span class="eyebrow on-dark">Invest With Us</span>
+      <h2 class="display">Underwritten, renovated, and operated <em>by the same team.</em></h2>
+      <p>
+        Not ready to commit to a specific deal? Start the conversation and we'll point you at the
+        right offering when it opens.
+      </p>
+      <div class="cta-actions">
+        <a class="btn gold" href="/invest">Request Access <span aria-hidden="true">⟶</span></a>
+      </div>
+    </div>
+  </section>
+</SubpageLayout>

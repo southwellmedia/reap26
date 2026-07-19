@@ -459,6 +459,38 @@ html.js-rvl .reap-home .sec-head.rvl.rvl-in::after { transform: scaleX(1); }
 /* anchor offsets under the fixed nav */
 .reap-home section[id] { scroll-margin-top: 96px; }
 
+/* =============================================================================
+   Offerings — LucidOS deal-room teasers (/offerings, /offerings/[id]).
+   Extends the portfolio card + case-study grammar; only the raise-specific
+   pieces are new (funding progress, terms figures, interest section).
+   ============================================================================= */
+/* card without a cover photo — olive field with the centered gold logomark */
+.reap-home .prop .ph.noimg { background: var(--green-900); display: flex; align-items: center; justify-content: center; }
+.reap-home .prop .ph.noimg img { width: 72px; height: 72px; object-fit: contain; opacity: 0.7; }
+/* fully-subscribed flash on offering cards — olive over the photo, not gold */
+.reap-home .prop .ph .tag.subscribed { position: absolute; top: 18px; left: 18px; background: var(--green-950); color: var(--gold-400); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; padding: 8px 13px; }
+/* raise terms row on offering cards */
+.reap-home .prop .raise-figs { display: flex; gap: 36px; border-top: 1px solid var(--reap-hairline); margin-top: 8px; padding-top: 16px; }
+.reap-home .prop .raise-figs .n { font-family: var(--font-display); font-size: 21px; line-height: 1; color: var(--gold-text); font-variant-numeric: tabular-nums lining-nums; }
+.reap-home .prop .raise-figs .l { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-top: 7px; }
+
+/* funding progress inside the olive deal-summary rail */
+.reap-home .raise-progress { margin-top: 22px; }
+.reap-home .raise-progress .bar { height: 5px; background: rgba(255, 255, 255, 0.16); border-radius: 999px; overflow: hidden; }
+.reap-home .raise-progress .fill { height: 100%; background: var(--gold-400); border-radius: 999px; }
+.reap-home .raise-progress .legend { display: flex; justify-content: space-between; gap: 16px; margin-top: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+
+/* offering video sits inside the narrative column */
+.reap-home .deal-video { margin-top: 44px; aspect-ratio: 16 / 9; background: var(--green-950); }
+.reap-home .deal-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+/* interest / fully-subscribed section + offerings empty state */
+.reap-home .interest-block { max-width: 720px; margin-top: 48px; display: flex; flex-direction: column; gap: 24px; }
+.reap-home .interest-lede { margin: 0; font-size: 16.5px; line-height: 1.8; color: rgba(0, 0, 0, 0.62); max-width: 58ch; }
+.reap-home .invest-form label .opt { text-transform: none; letter-spacing: 0.04em; font-weight: 500; color: var(--text-muted); }
+.reap-home .offerings-empty { margin-top: 48px; display: flex; flex-direction: column; gap: 24px; max-width: 720px; }
+.reap-home .offerings-empty p { margin: 0; font-size: 16.5px; line-height: 1.8; color: rgba(0, 0, 0, 0.62); max-width: 58ch; }
+
 @media (prefers-reduced-motion: reduce) {
   .reap-home .hload {
     opacity: 1;

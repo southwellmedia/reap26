@@ -19,6 +19,10 @@ export default defineConfig({
       PUBLIC_GOOGLE_MAPS_API_KEY: envField.string({ context: 'client', access: 'public', optional: true, default: '' }),
       PUBLIC_CONSENT_ENABLED: envField.boolean({ context: 'client', access: 'public', optional: true, default: false }),
       PUBLIC_PRIVACY_POLICY_URL: envField.string({ context: 'client', access: 'public', optional: true, default: '' }),
+      // LucidOS deal rooms (see LUCID-DEALROOM.md). The key is a shared
+      // secret — server/build code only, never the browser.
+      DEALROOM_API_URL: envField.string({ context: 'server', access: 'public', optional: true, default: 'https://lucid.madstack.io/api/dealroom' }),
+      DEALROOM_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 
