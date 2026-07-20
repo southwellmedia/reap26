@@ -4,7 +4,11 @@
  * A standalone split-view experience, not a site page: full-height olive
  * brand panel (photo, watermark, stats, LP quote) beside a focused light
  * conversion column. No site nav or footer — the only exits are the brand
- * link home and the email fallback. Form posts to /api/contact.
+ * link home and the email fallback. The form registers the prospect with
+ * LucidOS (the same key-less interest endpoint the homepage OfferModal and
+ * OfferingsGate use), stores the 30-day deal-room token, and redirects into
+ * the room. When no raise is active the form defers to the email fallback —
+ * nothing posts to /api/contact (a stub that stores nothing).
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import '@/styles/reap-home.css';
@@ -12,6 +16,7 @@ import towers from '@/assets/reap/towers-dusk.jpg';
 import watermark from '@/assets/reap/reap-watermark.svg';
 import logomark from '@/assets/reap/reap-logomark-gold.svg';
 import { firmStats, PERFORMANCE_DISCLOSURE } from '@/config/stats.config';
+import { DEALROOM_BASE_URL } from '@/lib/dealroom';
 
 const steps = [
   {
@@ -106,21 +111,32 @@ const steps = [
           }
         </ol>
 
-        <form class="invest-form on-light" method="post" action="/api/contact" novalidate>
+        <form class="invest-form on-light" data-api-base={DEALROOM_BASE_URL} novalidate>
           <div class="field">
             <label for="ra-name">Name</label>
-            <input id="ra-name" name="name" type="text" autocomplete="name" required minlength="2" />
+            <input id="ra-name" name="fullName" type="text" autocomplete="name" required minlength="2" maxlength="200" />
           </div>
           <div class="field">
             <label for="ra-email">Email</label>
             <input id="ra-email" name="email" type="email" autocomplete="email" required />
           </div>
-          <div class="field field-wide">
+          <div class="field">
             <label for="ra-status">Investor Status</label>
-            <select id="ra-status" name="investor-status">
+            <select id="ra-status" name="investorStatus">
               <option value="Accredited investor">Accredited investor</option>
-              <option value="Non-accredited investor">Non-accredited investor</option>
+              <option value="Non-accredited (sophisticated) investor">Non-accredited (sophisticated)</option>
               <option value="Not sure yet">Not sure yet</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ra-range">Investment Range <span class="opt">(optional)</span></label>
+            <select id="ra-range" name="investmentRange">
+              <option value="">Prefer not to say</option>
+              <option value="Under $50k">Under $50k</option>
+              <option value="$50k – $100k">$50k – $100k</option>
+              <option value="$100k – $250k">$100k – $250k</option>
+              <option value="$250k – $500k">$250k – $500k</option>
+              <option value="$500k+">$500k+</option>
             </select>
           </div>
           <div class="field field-wide">
@@ -133,8 +149,6 @@ const steps = [
               minlength="10"
               placeholder="Timeline, target allocation, questions — whatever helps us point you at the right offering."></textarea>
           </div>
-          <input type="text" name="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp" />
-          <input type="hidden" name="subject" value="Request Access — Invest Page" />
           <div class="field field-wide form-actions">
             <button class="btn gold" type="submit">Request Access <span aria-hidden="true">⟶</span></button>
             <a class="alt-path" href="mailto:info@reapcap.com">or email info@reapcap.com</a>
@@ -149,47 +163,103 @@ const steps = [
 </BaseLayout>
 
 <script>
-  // Request-access form → POST /api/contact (email link remains as fallback)
-  function initInvestForm() {
+  // Request-access form → LucidOS interest endpoint (same flow as OfferModal):
+  // register the prospect, store the deal-room token, redirect into the room.
+  const ACCESS_KEY = 'reap:dealroom-access';
+
+  async function initInvestForm() {
     const form = document.querySelector<HTMLFormElement>('.invest-form');
     if (!form || form.dataset.wired) return;
     form.dataset.wired = 'true';
     const status = form.querySelector<HTMLElement>('.form-status');
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+    let raiseId: string | null = null;
+    try {
+      const res = await fetch('/api/dealroom-status');
+      const state = res.ok ? await res.json() : null;
+      if (state?.active && state.raiseId) raiseId = state.raiseId;
+    } catch {
+      /* status route unreachable — treated below as no active raise */
+    }
+
+    // No active raise: the interest endpoint needs a raiseId, and /api/contact
+    // is a stub that stores nothing — email is the only path that reaches us.
+    if (!raiseId) {
+      if (button) button.disabled = true;
+      if (status) {
+        status.textContent =
+          'Requests are handled directly right now — email info@reapcap.com and we’ll reply within two business days.';
+      }
+      return;
+    }
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!form.reportValidity()) return;
-      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-      const data = new FormData(form);
-      // Fold investor status into the message body (the API schema has no custom fields)
-      const investorStatus = data.get('investor-status');
-      if (investorStatus) {
-        data.set('message', `Investor status: ${investorStatus}\n\n${data.get('message') ?? ''}`);
-        data.delete('investor-status');
-      }
       if (button) button.disabled = true;
       if (status) {
         status.classList.remove('error');
-        status.textContent = 'Sending…';
+        status.textContent = 'One moment…';
       }
-      try {
-        const res = await fetch(form.action, { method: 'POST', body: data });
-        const json = await res.json().catch(() => ({ success: false }));
-        if (res.ok && json.success) {
-          form.reset();
-          if (status)
-            status.textContent = 'Received. We reply within two business days with what’s open now.';
-        } else {
-          throw new Error('submit-failed');
-        }
-      } catch {
+
+      const data = new FormData(form);
+      const payload: Record<string, string> = { sourceUrl: location.href };
+      for (const key of ['fullName', 'email', 'investmentRange']) {
+        const value = data.get(key)?.toString().trim();
+        if (value) payload[key] = value;
+      }
+      const investorStatus = data.get('investorStatus')?.toString().trim();
+      const goals = data.get('message')?.toString().trim();
+      payload.message = [
+        'Request access (/invest)',
+        investorStatus ? `Investor status: ${investorStatus}` : null,
+        goals ? `Goals: ${goals}` : null,
+      ]
+        .filter(Boolean)
+        .join(' — ')
+        .slice(0, 5000);
+
+      const setError = (text: string) => {
         if (status) {
           status.classList.add('error');
-          status.textContent =
-            'Something went wrong on our end — please email info@reapcap.com and we’ll take it from there.';
+          status.textContent = text;
         }
-      } finally {
         if (button) button.disabled = false;
+      };
+
+      // Same rule as the deal-room gate: no prospect registered, no entry
+      try {
+        const res = await fetch(`${form.dataset.apiBase}/v1/raises/${raiseId}/interest`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          if (res.status === 429) {
+            setError('Too many requests from your connection — try again in an hour, or email info@reapcap.com.');
+          } else {
+            const body = await res.json().catch(() => null);
+            setError(
+              body?.error
+                ? `We couldn’t register your request: ${body.error}`
+                : 'We couldn’t register your request — please email info@reapcap.com for access.'
+            );
+          }
+          return;
+        }
+      } catch {
+        setError(
+          'We couldn’t reach the registration service — an ad blocker may be interfering. Please retry or email info@reapcap.com.'
+        );
+        return;
       }
+      try {
+        localStorage.setItem(ACCESS_KEY, String(Date.now()));
+      } catch {
+        /* private mode — the deal-room gate will ask again */
+      }
+      window.location.assign(`/offerings/${raiseId}`);
     });
   }
 
