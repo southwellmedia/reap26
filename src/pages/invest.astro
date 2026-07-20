@@ -205,6 +205,10 @@ const steps = [
 
       const data = new FormData(form);
       const payload: Record<string, string> = { sourceUrl: location.href };
+      // Forward the LucidOS tracker visitor id so the prospect's anonymous
+      // browsing history stitches onto their CRM contact timeline.
+      const vid = document.cookie.match(/(?:^|; )_lcd_vid=([^;]*)/)?.[1];
+      if (vid) payload.visitorKey = decodeURIComponent(vid);
       for (const key of ['fullName', 'email', 'investmentRange']) {
         const value = data.get(key)?.toString().trim();
         if (value) payload[key] = value;
