@@ -9,7 +9,8 @@
  *
  * Shows only when /api/dealroom-status reports an active raise, the visitor
  * has no standing access token, and the modal wasn't dismissed in the last
- * 7 days. Appears after a short delay; dismissible via ×, Esc, or backdrop.
+ * 7 days. Appears on the first scroll (engagement signal — a timer felt
+ * late); dismissible via ×, Esc, or backdrop.
  */
 import logomark from '@/assets/reap/reap-logomark-gold.svg';
 import { DEALROOM_BASE_URL } from '@/lib/dealroom';
@@ -178,12 +179,19 @@ import { DEALROOM_BASE_URL } from '@/lib/dealroom';
       window.location.assign(`/offerings/${raiseId}`);
     });
 
-    // Reveal after the visitor has had a moment with the page
-    setTimeout(() => {
+    // Reveal on first scroll — the visitor has started engaging. If they
+    // arrived mid-page (anchor link, restored scroll position, or scrolled
+    // while the status fetch was in flight), that counts as engagement too.
+    const reveal = () => {
       if (!document.getElementById('offer-modal')) return;
       modal.hidden = false;
       document.documentElement.classList.add('gate-locked');
-    }, 6000);
+    };
+    if (window.scrollY > 40) {
+      reveal();
+    } else {
+      window.addEventListener('scroll', reveal, { once: true, passive: true });
+    }
   }
 
   document.addEventListener('astro:page-load', initOfferModal);
