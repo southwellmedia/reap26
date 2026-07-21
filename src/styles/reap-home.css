@@ -376,7 +376,7 @@ html.js-rvl .reap-home .sec-head.rvl.rvl-in::after { transform: scaleX(1); }
 .reap-home .invest-form { width: 100%; max-width: 620px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; text-align: left; margin-top: 10px; }
 .reap-home .invest-form .field { display: flex; flex-direction: column; gap: 8px; }
 .reap-home .invest-form .field-wide { grid-column: 1 / -1; }
-.reap-home .invest-form label { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-400); }
+.reap-home .invest-form label { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-400); white-space: nowrap; }
 .reap-home .invest-form input,
 .reap-home .invest-form select,
 .reap-home .invest-form textarea { font-family: var(--font-body); font-size: 15px; color: #fff; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border-on-dark); border-radius: 2px; padding: 13px 14px; transition: border-color 0.15s ease, background 0.15s ease; }
@@ -488,7 +488,7 @@ html.js-rvl .reap-home .sec-head.rvl.rvl-in::after { transform: scaleX(1); }
 
 /* interest lede + offerings empty state */
 .reap-home .interest-lede { margin: 0; font-size: 16.5px; line-height: 1.8; color: rgba(0, 0, 0, 0.62); max-width: 58ch; }
-.reap-home .invest-form label .opt { text-transform: none; letter-spacing: 0.04em; font-weight: 500; color: var(--text-muted); }
+.reap-home .invest-form label .opt { margin-left: 5px; font-size: 0.92em; text-transform: none; letter-spacing: 0.04em; font-weight: 500; color: var(--text-muted); }
 .reap-home .offerings-empty { margin-top: 48px; display: flex; flex-direction: column; gap: 24px; max-width: 720px; }
 .reap-home .offerings-empty p { margin: 0; font-size: 16.5px; line-height: 1.8; color: rgba(0, 0, 0, 0.62); max-width: 58ch; }
 
